@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/eventindicator.png</file>
+        <file>images/Settings.png</file>
+        <file>images/close.png</file>
+        <file>images/zoom.png</file>
+        <file>images/minimize_3.png</file>
+        <file>images/bg.jpg</file>
+        <file>images/20170420031214123.jpg</file>
+        <file>images/note_128px.ico</file>
+        <file>sounds/tictoe.mp3</file>
+    </qresource>
+</RCC>
