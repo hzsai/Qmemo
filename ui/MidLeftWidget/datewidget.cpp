@@ -430,11 +430,16 @@ void DayLabel::leaveEvent(QEvent *event)
 //单击事件
 void DayLabel::mousePressEvent(QMouseEvent *event)
 {
+    QString str = m_strListMemo;
     if (event->button() != Qt::LeftButton)
         return ;
 
     emit signalCurrDay(m_nDay);
 
+    emit signalMemo(str);
+    emit signalCurrDate(currDate);
+
+    setSelected(true);
     QLabel::mousePressEvent(event);
 }
 

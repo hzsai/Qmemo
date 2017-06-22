@@ -3,6 +3,13 @@
 ## Qmemo
 #### 是一个简单的QT日历记事本应用。
 ***
+
+### 写在编写之前
+ 1. 主要参照了两位大神的作品,非常的感谢^_^
+   [1]. nigoole, 链接：http://blog.csdn.net/nigoole/article/details/51320239
+   [2]. Kevin LiQi, 链接：http://blog.csdn.net/u013704336/article/details/50945274
+   其中，界面布局学习了Kevin LiQi的，左边的日历界面是魔改nigoole的,其余由自己实现。
+
 #### 编写记录
 
  0. Idea: 版面参照金山词霸的设计，词霸的界面很好看( ⊙ o ⊙ )！
