@@ -4,7 +4,11 @@
 #### 是一个简单的QT日历记事本应用。
 ***
 
-### 写在编写之前
+#### 使用方法
+ 1. Use qmake to generate `your` makefile
+ 2. then build it, that's all.
+
+#### 写在编写之前
  1. 主要参照了两位大神的作品,非常的感谢^_^
    [1]. nigoole, 链接：http://blog.csdn.net/nigoole/article/details/51320239
    [2]. Kevin LiQi, 链接：http://blog.csdn.net/u013704336/article/details/50945274
