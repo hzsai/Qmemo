@@ -115,7 +115,7 @@ void MyMenu::slotHelp()
     QMessageBox box;
     box.information(this, tr("帮助"), tr("帮助<br>(1) 在相应日期下写日记并且保存就行啦，界面就显示了全部功能。<br>"
                                        "(2) 菜单设置图片和字体。半点和整点会报时(⊙o⊙)哦^_^<br>"
-                                       "(3) 删除掉执行文件所在目录下的<i>qmemo.ini</i>文件可以再次看到那张帅帅的图片(⊙o⊙)哦<br>"
-                                       "(4) 查看日记前先<strong>双击</strong>某个日期哦<br>"
-                                       "(5) 图标来自www.easyicon.net。"), QMessageBox::Yes);
+                                       "(3) 删除掉执行文件所在目录下的<strong>qmemo.ini</strong>文件可以再次看到那张帅帅的图片(⊙o⊙)哦<br>"
+                                       "(4) 查看日记前先<strong>双击</strong>和<strong>单击</strong>某个日期哦<br>"
+                                       "(5) 图标来自www.easyicon.net,非常感谢！！！"), QMessageBox::Yes);
 }
