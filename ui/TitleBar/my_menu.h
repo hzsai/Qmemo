@@ -23,6 +23,7 @@ public slots:
     void slotAboutAuthur();
     void slotAboutQt();
     void slotSetPicPath();
+    void slotShowTodayWeather();
     void slotHelp();
 
 public:
@@ -47,6 +48,9 @@ public:
     //quit action
     QAction *m_actionQuit;
     QString picPath;
+
+    // weather
+    QAction *aboutTodayWeather;
 };
 
 #endif // MY_MENU_H

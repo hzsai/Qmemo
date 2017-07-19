@@ -60,6 +60,11 @@ public:
     QMediaPlayer *player;
     QMediaPlaylist *playList;
 
+    // 天气
+    QHBoxLayout *m_horShowWeather;
+    QLabel *WeatherData;
+
+
 };
 
 #endif // TITLEWIDGET_H

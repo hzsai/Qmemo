@@ -66,6 +66,8 @@ void MyMenu::initWidget()
     m_actionQuit->setText(tr("退出"));
     m_actionSettingFont = new QAction(this);
     m_actionSettingFont->setText(tr("设置字体"));
+    aboutTodayWeather = new QAction(this);
+    aboutTodayWeather->setText(tr("Today's Weather"));
 
     //设置二级菜单
     m_menuSetting->addAction(m_actionSettingFont);
@@ -79,6 +81,8 @@ void MyMenu::initWidget()
     this->addAction(m_actionOpenPic);
     this->addSeparator();
     this->addMenu(m_menuSetting);
+    this->addSeparator();
+    this->addAction(aboutTodayWeather);
     this->addSeparator();
     this->addMenu(m_menuAbout);
     this->addSeparator();
@@ -118,4 +122,10 @@ void MyMenu::slotHelp()
                                        "(3) 删除掉执行文件所在目录下的<strong>qmemo.ini</strong>文件可以再次看到那张帅帅的图片(⊙o⊙)哦<br>"
                                        "(4) 查看日记前先<strong>双击</strong>和<strong>单击</strong>某个日期哦<br>"
                                        "(5) 图标来自www.easyicon.net,非常感谢！！！"), QMessageBox::Yes);
+}
+
+void MyMenu::slotShowTodayWeather()
+{
+    QMessageBox box;
+
 }
