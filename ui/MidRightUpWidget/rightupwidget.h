@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QObject>
 
+class QPushButton;
 
 class RightUpWidget : public QWidget
 {
@@ -23,10 +24,14 @@ signals:
 
 public Q_SLOTS:
     void slotLoadImage();
+    void slotLoadImage(QString file_path);
     void slotSetPicPath();
 
 private:
     QPixmap m_currPixmap;
+
+    QPushButton *labelprev;
+    QPushButton *labelnext;
 protected:
     void paintEvent(QPaintEvent *);
     void drawBackground(QPainter *);

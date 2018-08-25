@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <QFrame>
+#include <QNetworkAccessManager>
+
+#include "plugins/iciba_word.h"
 
 class TitleWidget;
 class RightUpWidget;
@@ -12,7 +15,16 @@ class DataBase;
 
 class QVBoxLayout;
 class QHBoxLayout;
+class QNetworkReply;
+class QNetworkAccessManager;
 
+// 请求类型
+typedef enum {
+    REQ_JSON,
+    REQ_PIC,
+    REQ_TEXT,
+    REQ_FILE
+} REQ_TYPE;
 
 class MemoWidget : public QFrame
 {
@@ -24,14 +36,32 @@ private:
     void initForm();
     void initWidget();
     void initConnect();
+    void initBaseInfo();
 
-Q_SIGNALS:
+    // 创建请求
+    void createRequest();
+    void createRequest(QString url);
+    void createRequest(QString url, int type);
+
+signals:
     void signalMax(int);
-public Q_SLOTS:
+    void signalDealWithJsonTypeFinished(QString url, int type);
+    void signalDealWithFileTypeFinished(QString file_path);
+    void signalParseJsonError(QString msg);
+    void signalCommonMsg(QString msg);
+
+public slots:
     void slotClose();
 
     void slotShowMax();
     void slotShowMin();
+
+    // 处理来自QNetAccessManager的返回数据
+    void slotDealWithRequest();
+    void slotDealWithFileType();
+    void slotDealWithJsonType();
+    void slotDealWithPicType();
+    void slotDealWithTextType();
 
 
 protected:
@@ -60,6 +90,11 @@ private:
     QVBoxLayout *m_rightLayout;
 
     DataBase *database;
+
+    IcibaWord *icibaword;
+
+    QNetworkAccessManager *qnam;
+    QNetworkReply *reply;
 
 };
 

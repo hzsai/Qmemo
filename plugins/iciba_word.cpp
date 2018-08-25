@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QFile>
 #include <QDebug>
+#include <QStringList>
 
 IcibaWord::IcibaWord():
     caption(""),
@@ -18,8 +19,38 @@ IcibaWord::IcibaWord():
     sid(1),
     sp_pv(0),
     translation(""),
-    tts("")
+    tts(""),
+    is_read(false)
 {
+    init();
+}
+
+void IcibaWord::init()
+{
+    m_year = QDateTime::currentDateTime().date().year();
+    m_month = QDateTime::currentDateTime().date().month();
+    m_day = QDateTime::currentDateTime().date().day();
+    m_datetime.setDate(QDate(m_year, m_month, m_day));
+}
+
+QString IcibaWord::get_picture2()
+{
+    return picture2;
+}
+
+int IcibaWord::get_year()
+{
+    return m_year;
+}
+
+int IcibaWord::get_month()
+{
+    return m_month;
+}
+
+int IcibaWord::get_day()
+{
+    return m_day;
 }
 
 void IcibaWord::read(const QJsonObject &json)
@@ -37,6 +68,8 @@ void IcibaWord::read(const QJsonObject &json)
     sp_pv = json["sp_pv"].toString().toInt();
     translation = json["translation"].toString();
     tts = json["tts"].toString();
+
+    parsedate(dateline);
 }
 
 void IcibaWord::read_file()
@@ -51,6 +84,7 @@ void IcibaWord::read_file()
     QByteArray loaddata = in_file.readAll();
     QJsonDocument jsondoc(QJsonDocument::fromJson(loaddata));
     read(jsondoc.object());
+    is_read = true;
     print();
 }
 
@@ -101,4 +135,47 @@ void IcibaWord::print()
     qDebug() << "Sid: " 			<< sid;
     qDebug() << "Translation: " 	<< translation;
     qDebug() << "TTS: "				<< tts;
+}
+
+void IcibaWord::parsedate(QString date)
+{
+    QStringList lst = date.split("-");
+
+    m_year = lst.at(0).toInt();
+    m_month = lst.at(1).toInt();
+    m_day = lst.at(2).toInt();
+}
+
+QString IcibaWord::parsefilename() const
+{
+    if (picture2 == nullptr)
+        return "";
+    QStringList lis = picture2.split("/");
+    int length = lis.length();
+    return lis.at(length-1);
+}
+
+void IcibaWord::tomorrow()
+{
+    if (!is_read)
+        return ;
+    day_transfer(1);
+    qDebug("Day to tomorrow, please update info.");
+}
+
+void IcibaWord::yesterday()
+{
+    if (!is_read)
+        return ;
+    day_transfer(-1);
+    qDebug("Day to yesterday, please update info.");
+}
+
+void IcibaWord::day_transfer(int days)
+{
+    m_datetime.setDate(QDate(m_year, m_month, m_day));
+    m_datetime.addDays(days);
+    m_year = m_datetime.currentDateTime().date().year();
+    m_month = m_datetime.currentDateTime().date().month();
+    m_day = m_datetime.currentDateTime().date().day();
 }

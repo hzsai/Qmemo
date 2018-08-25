@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QLabel>
+#include <QPushButton>
 #include <QDebug>
 #include <QColor>
 #include <QSettings>
@@ -29,6 +31,18 @@ void RightUpWidget::initConnect()
 
 void RightUpWidget::initForm()
 {
+    // 上一张、下一张按钮
+    labelprev = new QPushButton(this);
+    labelnext = new QPushButton(this);
+
+    labelprev->setText("<<");
+    labelnext->setText(">>");
+    labelprev->setGeometry(20, 165, 20, 20);
+    labelnext->setGeometry(580, 165, 20, 20);
+    labelnext->setVisible(false);
+    labelprev->setVisible(false);
+
+    // 图片
     this->picPath = "";
     QSettings setting("./qmemo.ini", QSettings::IniFormat);
     if (setting.contains("Qmemo/PicturePath")) {
@@ -46,11 +60,18 @@ void RightUpWidget::slotLoadImage()
     loadImage(picPath);
 }
 
+void RightUpWidget::slotLoadImage(QString file_path)
+{
+    loadImage(file_path);
+}
+
 void RightUpWidget::loadImage(QString fileName)
 {
     QPixmap pixmap;
     pixmap.load(fileName);
     m_currPixmap = pixmap;
+    // refresh
+    repaint();
 }
 
 void RightUpWidget::paintEvent(QPaintEvent *)

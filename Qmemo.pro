@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql multimedia
+QT       += core gui sql multimedia network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -33,7 +33,9 @@ SOURCES += main.cpp\
     ui/MidRightDownWidget/rightdownwidget.cpp \
     database/database.cpp \
     ui/MidLeftWidget/datewidget.cpp \
-    ui/MidLeftWidget/date.cpp
+    ui/MidLeftWidget/date.cpp \
+    plugins/iciba_word.cpp \
+    plugins/qreplytimeout.cpp
 
 HEADERS  += \
     memowidget.h \
@@ -45,7 +47,9 @@ HEADERS  += \
     ui/MidRightDownWidget/rightdownwidget.h \
     database/database.h \
     ui/MidLeftWidget/datewidget.h \
-    ui/MidLeftWidget/date.h
+    ui/MidLeftWidget/date.h \
+    plugins/iciba_word.h \
+    plugins/qreplytimeout.h
 
 RESOURCES += \
     res.qrc
@@ -57,3 +61,7 @@ CONFIG += c++11
 DISTFILES +=
 
 RC_ICONS = images/note_128px.ico
+
+CONFIG(debug) {
+        DEFINES += KK
+}

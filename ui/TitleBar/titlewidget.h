@@ -64,6 +64,7 @@ public:
     QHBoxLayout *m_horShowWeather;
     QLabel *WeatherData;
 
+    //
 
 };
 

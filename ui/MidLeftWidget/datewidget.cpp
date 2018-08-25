@@ -18,6 +18,9 @@
 #include <QSpacerItem>
 #include <QDebug>
 #include <QFont>
+#include <QTimer>
+
+static int FIRST = 1;
 
 // 简述：
 // 这是Qmemo的日历模块，有以下几部分组成：
@@ -420,9 +423,9 @@ void DayLabel::leaveEvent(QEvent *event)
     if (PREV_MONTH_DAY == nProperty || NEXT_MONTH_DAY == nProperty)
         return ;
     this->setStyleSheet(orig);
-    if (this->bSelect) {
-        this->setStyleSheet("border: 2px solid red");
-    }
+    //if (this->bSelect) {
+    //    this->setStyleSheet("border: 2px solid red");
+    //}
     // 转发
     QLabel::leaveEvent(event);
 }
@@ -430,6 +433,10 @@ void DayLabel::leaveEvent(QEvent *event)
 //单击事件
 void DayLabel::mousePressEvent(QMouseEvent *event)
 {
+    // 点击有几个事件：
+    // 1. 设置Editor的内容
+    // 2. 设置大的那个日期label
+    // 3. 设置颜色变化，红框框
     QString str = m_strListMemo;
     if (event->button() != Qt::LeftButton)
         return ;
@@ -519,6 +526,9 @@ void DateWidget::initWidget()
     editMonthJump->setText(QDateTime::currentDateTime().toString("MM"));
     editDayJump->setText(QDateTime::currentDateTime().toString("dd"));
 
+    // 消息条
+    labelMsg = new QLabel(this);
+
     //跳转按钮
     btnDateJump = new QPushButton(this);
     btnToday = new QPushButton(this);
@@ -543,6 +553,7 @@ void DateWidget::initWidget()
     verLayoutAll->setContentsMargins(0, 0, 0, 0);
     //verLayoutAll->addSpacing(20);
     verLayoutAll->addWidget(calendar);
+    verLayoutAll->addWidget(labelMsg);
     verLayoutAll->addLayout(layoutJump);
     verLayoutAll->addWidget(groupBoxBottom);
     verLayoutAll->addSpacing(40);
@@ -606,6 +617,21 @@ void DateWidget::sltBack2todday()
     int day = QDate::currentDate().day();
 
     calendar->jumpToddate(year, month, day);
+}
+
+void DateWidget::sltDisplaymsg(const QString &msg)
+{
+    labelMsg->setText(msg);
+    m_timer = new QTimer(this);
+    m_timer->start(2000);
+    m_timer->setSingleShot(true);
+    connect(m_timer, &QTimer::timeout, this, &DateWidget::sltStopTimer);
+}
+
+void DateWidget::sltStopTimer()
+{
+    labelMsg->setText(" ");
+    m_timer->stop();
 }
 
 void DateWidget::paintEvent(QPaintEvent *)

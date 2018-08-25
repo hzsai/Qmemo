@@ -51,6 +51,9 @@ public:
 
     // weather
     QAction *aboutTodayWeather;
+
+    // 每日一图
+    QAction *getEveryDayPicture;
 };
 
 #endif // MY_MENU_H

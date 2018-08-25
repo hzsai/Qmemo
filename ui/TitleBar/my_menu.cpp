@@ -66,8 +66,14 @@ void MyMenu::initWidget()
     m_actionQuit->setText(tr("退出"));
     m_actionSettingFont = new QAction(this);
     m_actionSettingFont->setText(tr("设置字体"));
+
+    // weather QAction
     aboutTodayWeather = new QAction(this);
     aboutTodayWeather->setText(tr("Today's Weather"));
+
+    // 每日图片
+    getEveryDayPicture = new QAction(this);
+    getEveryDayPicture->setText(tr("每一图片"));
 
     //设置二级菜单
     m_menuSetting->addAction(m_actionSettingFont);
@@ -83,6 +89,8 @@ void MyMenu::initWidget()
     this->addMenu(m_menuSetting);
     this->addSeparator();
     this->addAction(aboutTodayWeather);
+    this->addSeparator();
+    this->addAction(getEveryDayPicture);
     this->addSeparator();
     this->addMenu(m_menuAbout);
     this->addSeparator();
@@ -111,7 +119,7 @@ void MyMenu::slotAboutQt()
 void MyMenu::slotAboutAuthur()
 {
     QMessageBox box;
-    box.information(this, tr("关于"), tr("来自<b>hzsai</b><br>"), QMessageBox::Yes);
+    box.information(this, tr("关于"), tr("来自<b>hzsai d^^b</b><br>"), QMessageBox::Yes);
 }
 
 void MyMenu::slotHelp()

@@ -10,6 +10,7 @@ class QComboBox;
 class QGroupBox;
 class QLineEdit;
 class QDate;
+class QTimer;
 class QGridLayout;
 class QHBoxLayout;
 class QVBoxLayout;
@@ -41,7 +42,7 @@ typedef enum {
 } E_DAY;
 
 
-static int FIRST = 1;
+
 
 // 每一个显示日期的格子组件
 class DayLabel : public QLabel {
@@ -204,6 +205,13 @@ public:
     QLineEdit *editMonthJump;
     QLineEdit *editDayJump;
 
+    // 再更新：这里最好用消息队列来处理显示信息哦，暂时留坑
+    // 消息显示条
+    QLabel *labelMsg;
+
+    // 简单及时
+    QTimer *m_timer;
+
     // 两个跳转按钮
     QPushButton *btnDateJump;
     QPushButton *btnToday;
@@ -221,6 +229,11 @@ private:
 private slots:
     void sltDateJump();
     void sltBack2todday();
+
+public slots:
+    // 用于显示提示信息消息槽
+    void sltDisplaymsg(const QString &msg);
+    void sltStopTimer();
 
 protected:
     void paintEvent(QPaintEvent *);

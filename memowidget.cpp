@@ -5,8 +5,9 @@
 #include "ui/MidRightUpWidget/rightupwidget.h"
 #include "ui/TitleBar/my_menu.h"
 #include "database/database.h"
+#include "plugins/qreplytimeout.h"
 
-
+#include <iostream>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QDesktopWidget>
@@ -19,6 +20,11 @@
 #include <QDebug>
 #include <QLabel>
 #include <QSettings>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 bool g_WidgetIsMin = false;
 
@@ -26,6 +32,7 @@ MemoWidget::MemoWidget(QWidget *parent)
     :QFrame(parent)
 {
     database = new DataBase(this);
+    this->initBaseInfo();
     this->initWidget();
     this->initForm();
     this->initConnect();
@@ -34,6 +41,12 @@ MemoWidget::MemoWidget(QWidget *parent)
 MemoWidget::~MemoWidget()
 {
 
+}
+
+void MemoWidget::initBaseInfo()
+{
+    icibaword = new IcibaWord();
+    qnam = new QNetworkAccessManager(this);
 }
 
 void MemoWidget::initForm()
@@ -103,7 +116,7 @@ void MemoWidget::initConnect()
     connect(m_title->m_menu->m_actionSettingFont, &QAction::triggered,
             m_rightDownWidget, &RightDownWidget::slotChoiceFont);
     //connect();
-    //
+    // 每个日期格子的signal & slot
     for (int i = 0; i < 42; i++) {
         // data transfer
         connect(m_leftDateWidget->calendar->labelDay[i], &DayLabel::signalMemo,
@@ -120,15 +133,32 @@ void MemoWidget::initConnect()
                 m_leftDateWidget->calendar, &CalendarWidget::setDay);
     }
     // refresh LabelIcon
+    // 相应日期的变化
     connect(m_rightDownWidget, &RightDownWidget::signalSetIcon,
            m_leftDateWidget->calendar,&CalendarWidget::setLabelIcon);
     // refresh
+    // 刷新整个日历组件数据signal
     connect(m_rightDownWidget->m_save, &QPushButton::clicked,
             m_leftDateWidget->calendar, &CalendarWidget::initDate);
     // store back
     connect(m_rightDownWidget, &RightDownWidget::signalRightDownWidgetSave,
             m_leftDateWidget->calendar, &CalendarWidget::slotRefreshMemo);
 
+    // 发起请求关联信号
+    connect(m_title->m_menu->getEveryDayPicture, &QAction::triggered,
+            this, &MemoWidget::slotDealWithRequest);
+    void (MemoWidget:: *signaldealwithfiletype)(QString, int) = &MemoWidget::signalDealWithJsonTypeFinished;
+    void (MemoWidget:: *slotcreaterequest)(QString, int) = &MemoWidget::createRequest;
+    connect(this, signaldealwithfiletype, this, slotcreaterequest);
+
+    void (MemoWidget:: *signaldealwithfilefinished)(QString) = &MemoWidget::signalDealWithFileTypeFinished;
+    void (RightUpWidget:: *slotloadimage) (QString) = &RightUpWidget::slotLoadImage;
+    connect(this, signaldealwithfilefinished, m_rightUpWidget, slotloadimage);
+
+    connect(this, &MemoWidget::signalParseJsonError,
+            m_leftDateWidget, &DateWidget::sltDisplaymsg);
+    connect(this, &MemoWidget::signalCommonMsg,
+            m_leftDateWidget, &DateWidget::sltDisplaymsg);
 }
 
 void MemoWidget::slotClose()
@@ -162,6 +192,159 @@ void MemoWidget::slotShowMin()
 {
     g_WidgetIsMin = true;
     this->showMinimized();
+}
+
+void MemoWidget::createRequest()
+{
+    if (qnam == nullptr)
+        return ;
+}
+
+// 这里写的有点问题，暂时不解决
+// 在这里，测试超时连接的相关,将slots绑到MidLeftWidget的labelinfo上
+// --fix
+void MemoWidget::createRequest(QString url)
+{
+    if (qnam == nullptr)
+        return ;
+    reply = qnam->get(QNetworkRequest(QUrl(url)));
+    QReplyTimeout *replyTimeout = new QReplyTimeout(reply, 1500);
+    connect(replyTimeout, &QReplyTimeout::timeout, [=](){
+        qDebug() << "createRequest, Timeout";
+    });
+    connect(replyTimeout, &QReplyTimeout::timeout,
+            m_leftDateWidget, &DateWidget::sltDisplaymsg);
+}
+
+void MemoWidget::createRequest(QString url, int type)
+{
+    if (qnam == nullptr)
+        return ;
+    qDebug() << "URL: " << url;
+    qDebug() << "Type: " << type;
+    reply = qnam->get(QNetworkRequest(QUrl(url)));
+    QReplyTimeout *replyTimeout = new QReplyTimeout(reply, 1500);
+    connect(replyTimeout, &QReplyTimeout::timeout,
+            m_leftDateWidget, &DateWidget::sltDisplaymsg);
+    connect(replyTimeout, &QReplyTimeout::timeout, [=](){
+        qDebug() << "createRequest with params, Timeout";
+    });
+    qDebug("createRequest");
+    switch (type) {
+    case REQ_FILE:
+        connect(reply, &QNetworkReply::finished, this, &MemoWidget::slotDealWithFileType);
+        break;
+    case REQ_JSON:
+        connect(reply, &QNetworkReply::finished, this, &MemoWidget::slotDealWithJsonType);
+        break;
+    case REQ_PIC:
+        connect(reply, &QNetworkReply::finished, this, &MemoWidget::slotDealWithPicType);
+        break;
+    case REQ_TEXT:
+        connect(reply, &QNetworkReply::finished, this, &MemoWidget::slotDealWithTextType);
+        break;
+    default:
+        break;
+    }
+}
+
+void MemoWidget::slotDealWithRequest()
+{
+    // 开始请求
+    QString mtime = QDateTime::currentDateTime().addDays(0).toString("yyyy-MM-dd");
+    QString url_1 = tr("http://open.iciba.com/dsapi/?date=%1").arg(mtime);
+
+    qDebug() << "slotDealWithRequest, " << url_1;
+    createRequest(url_1, REQ_JSON);
+    // createRequest("https://www.google.com");
+}
+
+void MemoWidget::slotDealWithFileType()
+{
+    if (reply == nullptr)
+        return ;
+    if (reply->error() != QNetworkReply::NoError) {
+        emit signalCommonMsg("网络错误！: "+reply->error());
+        qDebug() << "slotDealWithJsonType, " << "error: "
+                 << reply->error();
+        return ;
+    }
+    //保存有后缀类型的文件
+    // 从icibaword中获取url地址解析
+    QString file_name = icibaword->parsefilename();
+    qDebug() << file_name;
+    QString prefix = "";
+#ifdef QT_NO_DEBUG
+    if (file_name.endsWith(".jpg") || file_name.endsWith(".png")) {
+        prefix += "images/";
+    }
+#endif
+    file_name = prefix + file_name;
+    QFile out_file(file_name);
+    qDebug() << out_file.fileName();
+
+    if (!out_file.open(QIODevice::WriteOnly)) {
+        qWarning("slotDealWithFileType, file open failed.");
+        return ;
+    }
+    // 再读取reply的数据
+    QByteArray bytearray = reply->readAll();
+    out_file.write(bytearray);
+    qDebug("slotDealWithFileType, 获取网络FileType数据成功!");
+    emit signalDealWithFileTypeFinished(file_name);
+}
+
+void MemoWidget::slotDealWithJsonType()
+{
+    if (reply == nullptr)
+        return ;
+    if (reply->error() != QNetworkReply::NoError) {
+        qDebug() << "slotDealWithJsonType, " << "error: "
+                 << reply->error();
+        disconnect(reply, &QNetworkReply::finished, this, &MemoWidget::slotDealWithJsonType);
+        return ;
+    }
+    // 将获得的json文件写入磁盘，并读到对象icibaword中待用
+    QByteArray bytearray = reply->readAll();
+    QFile out_file("./today_weather.json");
+#ifndef QT_NO_DEBUG
+    QFile out_temp_file("./today_weather_temp.tmp");
+    if (!out_temp_file.open(QIODevice::WriteOnly)) {
+        qWarning("getting, file open failed.");
+        return ;
+    }
+    out_temp_file.write(bytearray);
+    out_temp_file.close();
+#endif
+
+    if (!out_file.open(QIODevice::WriteOnly)) {
+        qWarning("getting, file open failed.");
+        return ;
+    }
+    QJsonDocument jsdoc(QJsonDocument::fromJson(bytearray));
+    out_file.write(jsdoc.toJson());
+    out_file.close();
+    if (jsdoc.isEmpty()) {
+        qDebug() << "slotDealWithJsonType, json parse error. Request type is not json type.";
+        emit signalParseJsonError(QStringLiteral("解析Json异常!"));
+        return ;
+    }
+    icibaword->read(jsdoc.object());
+    emit signalCommonMsg("获取Json数据成功!");
+    qDebug("slotDealWithJsonType, 获取网络JsonType数据成功!");
+    emit signalDealWithJsonTypeFinished(icibaword->get_picture2(), REQ_FILE);
+}
+
+void MemoWidget::slotDealWithPicType()
+{
+    // 重复了,待用
+    return ;
+}
+
+void MemoWidget::slotDealWithTextType()
+{
+    // 重复了,待用
+    return ;
 }
 
 bool MemoWidget::eventFilter(QObject *obj, QEvent *event)

@@ -21,7 +21,7 @@ public:
     static QString queryNote(const QString &date);
 
 private:
-
+    void doAfavour();
 
 signals:
 

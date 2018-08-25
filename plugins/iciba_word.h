@@ -10,6 +10,38 @@ class IcibaWord
 public:
     explicit IcibaWord();
 
+    // 初始化
+    void init();
+    void parsedate(QString date);
+    void day_transfer(int days);
+
+    // 管理json读写
+    void read(const QJsonObject &json);
+    void write(QJsonObject &json) const;
+    void read_file();
+    void write_file();
+    void print();
+    void tomorrow();
+    void yesterday();
+    QString parsefilename() const;
+
+    // getter & setter
+    int get_year();
+    int get_month();
+    int get_day();
+    QString get_picture2();
+
+private:
+
+    // 日期构造必须,在读取时构造
+    int m_year;
+    int m_month;
+    int m_day;
+
+    // 简化日期加减操作
+    QDateTime m_datetime;
+
+    // josn 数据
     QString caption;
     QString content;
     QString dateline;
@@ -24,13 +56,8 @@ public:
     QString translation;
     QString tts;
 
-
-    // 管理json读写
-    void read(const QJsonObject &json);
-    void write(QJsonObject &json) const;
-    void read_file();
-    void write_file();
-    void print();
+    // 控制读写
+    bool is_read;
 };
 
 #endif // ICIBA_WORD_H

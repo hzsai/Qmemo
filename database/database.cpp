@@ -5,13 +5,15 @@
 #include <QSqlRecord>
 #include <QApplication>
 #include <QDebug>
+#include <QFile>
+#include <QDir>
 
 DataBase::DataBase(QWidget *parent)
     :QWidget(parent)
 {
     //qDebug() << QSqlDatabase::drivers();
     connectdb("/daily.db");
-
+    doAfavour();
 }
 
 //TODO: 将数据接口同意移到database上来进行统一管理.,具体功能·在
@@ -66,4 +68,12 @@ void DataBase::insertInto(QString &note, QString &date)
     query.bindValue(":note", note);
     query.bindValue(":data", date);
     query.exec();
+}
+
+void DataBase::doAfavour()
+{
+    QDir imageFolder;
+    if (!imageFolder.exists("images")) {
+        imageFolder.mkdir("images");
+    }
 }
