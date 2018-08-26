@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
     font.setPointSize(9);
     app.setFont(font);
 
+    // 无聊新构想：在日历界面三连可以消除，，，
     memo.show();
 
     return app.exec();
