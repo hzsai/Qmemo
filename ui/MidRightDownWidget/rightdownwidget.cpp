@@ -104,7 +104,7 @@ void RightDownWidget::documentWasModified()
     docWasModified = true;
 }
 
-//更改后的保存询问
+//更改后的保存询问,
 bool RightDownWidget::maybeSave()
 {
     if (!m_textEdit->document()->isModified())
@@ -207,5 +207,6 @@ void RightDownWidget::setTextEdit(QString &string)
 
 void RightDownWidget::setCurrDate(QString &string)
 {
+    prevDate = currDate;
     currDate = string;
 }

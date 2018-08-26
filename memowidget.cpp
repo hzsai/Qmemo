@@ -131,6 +131,8 @@ void MemoWidget::initConnect()
         // setDay
         connect(m_leftDateWidget->calendar->labelDay[i], &DayLabel::signalCurrDay,
                 m_leftDateWidget->calendar, &CalendarWidget::setDay);
+        connect(m_leftDateWidget->calendar->labelDay[i], &DayLabel::signalSetRedBox,
+                m_leftDateWidget->calendar, &CalendarWidget::slotSetRedBox);
     }
     // refresh LabelIcon
     // 相应日期的变化
@@ -366,6 +368,7 @@ void MemoWidget::mouseMoveEvent(QMouseEvent *event)
         this->move(event->globalPos() - m_point);
         event->accept();
     }
+    qDebug() << "MemoWidget::mouseMoveEvent, ";
 }
 
 void MemoWidget::mousePressEvent(QMouseEvent *event)

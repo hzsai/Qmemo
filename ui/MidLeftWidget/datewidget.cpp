@@ -16,6 +16,7 @@
 #include <QHBoxLayout>
 #include <QFormLayout>
 #include <QSpacerItem>
+#include <QMouseEvent>
 #include <QDebug>
 #include <QFont>
 #include <QTimer>
@@ -37,6 +38,7 @@ CalendarWidget::CalendarWidget(QWidget *parent)
     m_nYear = QDate::currentDate().year();
     m_nMonth = QDate::currentDate().month();
     m_nDay = QDate::currentDate().day();
+    fixedCurrDay = QDate::currentDate().day();
 
     initWidget();
     initDate();
@@ -199,6 +201,8 @@ void CalendarWidget::initWidget()
 void CalendarWidget::slotSetLabelDayShow(int day)
 {
     labelShowDay->setText(tr("%1").arg(day));
+    qDebug() << day;
+    fixedCurrDay = day;
 }
 
 void CalendarWidget::initDate()
@@ -248,7 +252,7 @@ void CalendarWidget::initDate()
     }
 
     labelDay[m_nDay + nWeek - 1]->setColor(CURRENT_DAY);
-    emit signalDayChanged();
+    // emit signalDayChanged();
 }
 
 void CalendarWidget::initData()
@@ -330,6 +334,34 @@ void CalendarWidget::slotRefreshMemo(QString &memo, int nday)
     int nWeek = Date::getFirstDayOfWeek(m_nYear, m_nMonth);
     labelDay[nday + nWeek - 1]->setMemo(memo);
     labelDay[nday + nWeek - 1]->labelIcon->setVisible(!memo.isEmpty());
+}
+
+void CalendarWidget::slotSetRedBox()
+{
+    int nWeek = Date::getFirstDayOfWeek(m_nYear, m_nMonth);
+    labelDay[fixedCurrDay + nWeek - 1]->setSelected(true);
+    repaint();
+}
+
+//void CalendarWidget::mouseMoveEvent(QMouseEvent *event)
+//{
+//    //在这里，重绘红框框，因为实在CalendarWidget里设置m_day来保存已点击的日期项
+//    qDebug() << "CalendarWidget::mouseMoveEvent, ";
+//    qDebug() << event->x();
+//}
+
+void CalendarWidget::enterEvent(QEvent *event)
+{
+//    qDebug("CalenderWidget::enterEvent, ");
+//    int nWeek = Date::getFirstDayOfWeek(m_nYear, m_nMonth);
+//    labelDay[m_nDay + nWeek - 1]->setSelected(true);
+}
+
+void CalendarWidget::leaveEvent(QEvent *event)
+{
+//    qDebug("CalenderWidget::leaveEvent, ");
+//    int nWeek = Date::getFirstDayOfWeek(m_nYear, m_nMonth);
+//    labelDay[m_nDay + nWeek - 1]->setSelected(true);
 }
 
 //DayLabel
@@ -414,6 +446,8 @@ void DayLabel::enterEvent(QEvent *event)
         return ;
     this->setStyleSheet("color: #ffff00; background: #c8b9a6; border-top: 1px solid #c3c3c3; border-left: 2px solid #c3c3c3; font:24px;");
     QLabel::enterEvent(event);
+    emit signalSetRedBox();
+    qDebug("DayLabel::enterEvent, ");
 }
 
 //离开的效果
@@ -428,6 +462,8 @@ void DayLabel::leaveEvent(QEvent *event)
     //}
     // 转发
     QLabel::leaveEvent(event);
+    emit signalSetRedBox();
+    qDebug("DayLabel::leaveEvent, ");
 }
 
 //单击事件
@@ -437,17 +473,22 @@ void DayLabel::mousePressEvent(QMouseEvent *event)
     // 1. 设置Editor的内容
     // 2. 设置大的那个日期label
     // 3. 设置颜色变化，红框框
+    // 框框堆叠主要原因：在dayLabel上进行的操作会只在那个label更新
+    // 要整个更新就要用，initDate()将界面重绘，但是重绘整个日历界面
+    // 很消耗资源的, 权当是一个小小的bug吧，不修改了
+    //
     QString str = m_strListMemo;
     if (event->button() != Qt::LeftButton)
         return ;
 
     emit signalCurrDay(m_nDay);
+    // emit signalSetRedBox();
 
-    emit signalMemo(str);
-    emit signalCurrDate(currDate);
+    // emit signalMemo(str);
+    // emit signalCurrDate(currDate);
 
     setSelected(true);
-    QLabel::mousePressEvent(event);
+    // QLabel::mousePressEvent(event);
 }
 
 void DayLabel::mouseDoubleClickEvent(QMouseEvent *event)

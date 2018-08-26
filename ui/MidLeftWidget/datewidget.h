@@ -65,6 +65,7 @@ signals:
     void signalMemo(QString &);
     void signalCurrDate(QString &);
     void signalCurrDay(int day);
+    void signalSetRedBox();
 private:
     QString m_strListMemo;
 protected:
@@ -116,6 +117,7 @@ public slots:
     void slotSetLabelDayShow(int day);
     void setLabelIcon(int );
     void slotRefreshMemo(QString &, int);
+    void slotSetRedBox();
 
 private:
     QVBoxLayout *verLayoutCalender;
@@ -164,6 +166,8 @@ private:
     int m_nYear;
     int m_nMonth;
     int m_nDay;
+
+    int fixedCurrDay;
 private:
     void initWidget();
 
@@ -172,6 +176,10 @@ private slots:
     void sltShowPreMonth();
     void sltShowNextMonth();
 
+protected:
+    // void mouseMoveEvent(QMouseEvent *event);
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
 };
 
 // 明显，在一开始，我没有理解这是什么，必须重构了

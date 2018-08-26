@@ -19,6 +19,7 @@ public:
     bool maybeSave();
     QPushButton *m_save;
     QString currDate;			//用于外部接入数据。
+    QString prevDate;
 
 signals:
     void signalSetIcon(int );
