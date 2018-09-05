@@ -58,7 +58,8 @@ FORMS +=
 
 CONFIG += c++11
 
-DISTFILES +=
+DISTFILES += \
+    extra/note.txt
 
 RC_ICONS = images/note_128px.ico
 
