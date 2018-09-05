@@ -30,6 +30,7 @@ public:
     int get_month();
     int get_day();
     QString get_picture2();
+    QString get_content();
 
 private:
 

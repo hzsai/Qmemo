@@ -40,6 +40,7 @@ public slots:
     void slotUpdateTime();
     void slotPrePlay();
     void slotPlay(int );
+    void slotSetEveryDayEnglish(const QString &parse);
 private:
     void initForm();
     void initWidget();
@@ -64,7 +65,8 @@ public:
     QHBoxLayout *m_horShowWeather;
     QLabel *WeatherData;
 
-    //
+    // 每日一句英语
+    QLabel *everydayEnglish;
 
 };
 

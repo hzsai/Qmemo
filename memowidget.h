@@ -62,6 +62,7 @@ public slots:
     void slotDealWithJsonType();
     void slotDealWithPicType();
     void slotDealWithTextType();
+    void slotDealWithRequestWithParam(int type);
 
 
 protected:

@@ -35,12 +35,17 @@ void RightUpWidget::initForm()
     labelprev = new QPushButton(this);
     labelnext = new QPushButton(this);
 
-    labelprev->setText("<<");
-    labelnext->setText(">>");
+    labelprev->setText("<");
+    labelnext->setText(">");
+
+    // position
     labelprev->setGeometry(20, 165, 20, 20);
     labelnext->setGeometry(580, 165, 20, 20);
-    labelnext->setVisible(false);
-    labelprev->setVisible(false);
+
+    // next and prev
+    // labelnext->setVisible(false);
+    labelnext->setAttribute(Qt::WA_TranslucentBackground);
+    // labelprev->setVisible(false);
 
     // 图片
     this->picPath = "";
@@ -49,7 +54,8 @@ void RightUpWidget::initForm()
         QString pth = setting.value("Qmemo/PicturePath").toString();
         this->picPath = pth;
     } else {
-        this->picPath = ":/images/20170420031214123.jpg";
+        // this->picPath = ":/images/20170420031214123.jpg";
+        this->picPath = "";
         setting.setValue("Qmemo/PicturePath", picPath);
     }
     loadImage(picPath);

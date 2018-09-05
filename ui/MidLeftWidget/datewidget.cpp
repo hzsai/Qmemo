@@ -1,3 +1,4 @@
+#include "date.h"
 #include "datewidget.h"
 #include "database/database.h"
 #include "ui/MidLeftWidget/date.h"
@@ -312,6 +313,68 @@ void CalendarWidget::sltShowNextMonth()
     }
     initDate();
     initData();
+}
+
+void CalendarWidget::sltShowPreDay()
+{
+    // 2018 1/1
+    qDebug() << "sltShowPreDay, comes here.";
+    qDebug() << "Year : " << m_nYear;
+    qDebug() << "Month: " << m_nMonth;
+    qDebug() << "Day  : " << m_nDay;
+    m_nDay -= 1;
+    if (m_nDay < 1) {
+        m_nMonth -= 1;
+    }
+    if (m_nMonth < 1) {
+        m_nMonth = 12;
+        m_nYear -= 1;
+    }
+    if (m_nDay < 1 || m_nMonth < 1)
+        m_nDay = Date::getMonthDays(m_nYear, m_nMonth);
+    initDate();
+    initData();
+    emit signalDayFinished(PREV_DAY);
+    qDebug() << "Year : " << m_nYear;
+    qDebug() << "Month: " << m_nMonth;
+    qDebug() << "Day  : " << m_nDay;
+}
+
+void CalendarWidget::sltShowNextDay()
+{
+    // 2018 12/31
+    // 2018 2/28
+    qDebug() << "sltShowNextDay, comes here.";
+    qDebug() << "Year : " << m_nYear;
+    qDebug() << "Month: " << m_nMonth;
+    qDebug() << "Day  : " << m_nDay;
+
+    if (Date::isLeapYear(m_nYear) && m_nDay == 29 && m_nMonth == 2) {
+        m_nDay = 1;
+        m_nMonth += 1;
+    }
+    else if (!Date::isLeapYear(m_nYear) && m_nDay == 28 && m_nMonth == 2) {
+        m_nDay = 1;
+        m_nMonth += 1;
+    } else {
+        int oriMonDay = Date::getMonthDays(m_nYear, m_nMonth);
+        if (oriMonDay < m_nDay + 1) {
+            m_nMonth += 1;
+            m_nDay = 1;
+        } else {
+            m_nDay += 1;
+        }
+        if (m_nMonth > 12) {
+            m_nMonth = 1;
+            m_nYear += 1;
+        }
+    }
+    initDate();
+    initData();
+    emit signalDayFinished(NEXT_DAY);
+    qDebug() << "Year : " << m_nYear;
+    qDebug() << "Month: " << m_nMonth;
+    qDebug() << "Day  : " << m_nDay;
 }
 
 void CalendarWidget::changeTitle(QString &str)

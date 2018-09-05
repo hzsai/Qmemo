@@ -65,7 +65,7 @@ void TitleWidget::slotChangeBtnStatus(int status)
 void TitleWidget::initForm()
 {
     this->setMaximumHeight(40);
-    //this->setMinimumWidth(630);
+    // this->setMinimumWidth(630);
     //click to focus.
     this->setFocusPolicy(Qt::ClickFocus);
 
@@ -98,6 +98,9 @@ void TitleWidget::initWidget()
     connect(this, &TitleWidget::signalPlay,
             this, &TitleWidget::slotPlay);
 
+    everydayEnglish = new QLabel(this);
+    everydayEnglish->setText(tr("Everyday English."));
+
     m_TbnMenu = new QPushButton(this);
     m_TbnMenu->setStyleSheet("color:#226DDD;");
     m_TbnMenu_min = new QPushButton(this);
@@ -105,9 +108,10 @@ void TitleWidget::initWidget()
     m_TbnMenu_close = new QPushButton(this);
 
     m_mainLayout = new QHBoxLayout(this);
-    m_mainLayout->addSpacing(20);
+    m_mainLayout->addSpacing(15);
     m_mainLayout->addWidget(m_TbnTime);
     m_mainLayout->addSpacing(20);
+    m_mainLayout->addWidget(everydayEnglish);
 
     m_mainLayout->addStretch();
     m_mainLayout->addWidget(m_TbnMenu);
@@ -138,6 +142,11 @@ void TitleWidget::initConnect()
             this, &TitleWidget::signalMin);
     connect(m_TbnMenu_close, &QPushButton::clicked,
             this, &TitleWidget::signalClose);
+}
+
+void TitleWidget::slotSetEveryDayEnglish(const QString &parse)
+{
+    everydayEnglish->setText(parse);
 }
 
 void TitleWidget::slotUpdateTime()

@@ -1,0 +1,13 @@
+This is a extra file for note.
+
+在界面的上下里:
+下得对比对象是对当前的时间QDateTime::currentDate()
+上的对比对象是三个时间m_nYear, m_nMonth, m_nDay,
+产生的信号：
+    signalPreDay(), signalNextDay()
+槽函数：
+    在网络部件的，左边日期：的
+
+prev & next消息链：点'>' 或 '<' 后，更改calendar的数据，更改的末尾有发送一个数据更改结束信号，
+在主界面里面，会有创建请求slot和结束信号相连接，用于创建请求（下载相关天的图片）。但是会有些慢不知道
+原因，暂时不弄，，，留坑

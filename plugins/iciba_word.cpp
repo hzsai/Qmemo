@@ -38,6 +38,11 @@ QString IcibaWord::get_picture2()
     return picture2;
 }
 
+QString IcibaWord::get_content()
+{
+    return content;
+}
+
 int IcibaWord::get_year()
 {
     return m_year;

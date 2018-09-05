@@ -16,11 +16,16 @@ public:
     void initForm();
     void initConnect();
     void loadImage(QString path);
-    QString picPath;
     void showSuitableSize(QPainter *);
+
+    QString picPath;
+    QPushButton *labelprev;
+    QPushButton *labelnext;
 
 signals:
     void signalSetPicPath();
+    void signalPrevPic();
+    void signalNextPic();
 
 public Q_SLOTS:
     void slotLoadImage();
@@ -30,8 +35,6 @@ public Q_SLOTS:
 private:
     QPixmap m_currPixmap;
 
-    QPushButton *labelprev;
-    QPushButton *labelnext;
 protected:
     void paintEvent(QPaintEvent *);
     void drawBackground(QPainter *);

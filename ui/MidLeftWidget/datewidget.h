@@ -41,6 +41,11 @@ typedef enum {
     CURRENT_DAY,
 } E_DAY;
 
+typedef enum {
+    PREV_DAY,
+    NEXT_DAY
+} PN_DAY;
+
 
 
 
@@ -111,6 +116,7 @@ signals:
     void signalDayDbClicked();
 
     void signalLabelDayShow(int);
+    void signalDayFinished(int);
 
 public slots:
     void changeTitle(QString &str);
@@ -171,10 +177,12 @@ private:
 private:
     void initWidget();
 
-private slots:
+public slots:
     void sltDayClicked(int type, int day);
     void sltShowPreMonth();
     void sltShowNextMonth();
+    void sltShowPreDay();
+    void sltShowNextDay();
 
 protected:
     // void mouseMoveEvent(QMouseEvent *event);

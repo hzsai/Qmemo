@@ -161,6 +161,12 @@ void MemoWidget::initConnect()
             m_leftDateWidget, &DateWidget::sltDisplaymsg);
     connect(this, &MemoWidget::signalCommonMsg,
             m_leftDateWidget, &DateWidget::sltDisplaymsg);
+    connect(m_rightUpWidget->labelnext, &QPushButton::clicked,
+            m_leftDateWidget->calendar, &CalendarWidget::sltShowNextDay);
+    connect(m_rightUpWidget->labelprev, &QPushButton::clicked,
+            m_leftDateWidget->calendar, &CalendarWidget::sltShowPreDay);
+     connect(m_leftDateWidget->calendar, &CalendarWidget::signalDayFinished,
+             this, &MemoWidget::slotDealWithRequestWithParam);
 }
 
 void MemoWidget::slotClose()
@@ -210,7 +216,7 @@ void MemoWidget::createRequest(QString url)
     if (qnam == nullptr)
         return ;
     reply = qnam->get(QNetworkRequest(QUrl(url)));
-    QReplyTimeout *replyTimeout = new QReplyTimeout(reply, 1500);
+    QReplyTimeout *replyTimeout = new QReplyTimeout(reply, 3000);
     connect(replyTimeout, &QReplyTimeout::timeout, [=](){
         qDebug() << "createRequest, Timeout";
     });
@@ -225,7 +231,7 @@ void MemoWidget::createRequest(QString url, int type)
     qDebug() << "URL: " << url;
     qDebug() << "Type: " << type;
     reply = qnam->get(QNetworkRequest(QUrl(url)));
-    QReplyTimeout *replyTimeout = new QReplyTimeout(reply, 1500);
+    QReplyTimeout *replyTimeout = new QReplyTimeout(reply, 3000);
     connect(replyTimeout, &QReplyTimeout::timeout,
             m_leftDateWidget, &DateWidget::sltDisplaymsg);
     connect(replyTimeout, &QReplyTimeout::timeout, [=](){
@@ -261,6 +267,24 @@ void MemoWidget::slotDealWithRequest()
     // createRequest("https://www.google.com");
 }
 
+void MemoWidget::slotDealWithRequestWithParam(int type)
+{
+    QString date_string = QString("%1-%2-%3")
+        .arg(m_leftDateWidget->calendar->year())
+        .arg(m_leftDateWidget->calendar->month())
+        .arg(m_leftDateWidget->calendar->day());
+    QString url_1 = tr("http://open.iciba.com/dsapi/?date=%1").arg(date_string);
+
+    switch (type) {
+    case PREV_DAY:
+        createRequest(url_1, REQ_JSON);
+        break;
+    case NEXT_DAY:
+        createRequest(url_1, REQ_JSON);
+        break;
+    }
+}
+
 void MemoWidget::slotDealWithFileType()
 {
     if (reply == nullptr)
@@ -293,6 +317,7 @@ void MemoWidget::slotDealWithFileType()
     QByteArray bytearray = reply->readAll();
     out_file.write(bytearray);
     qDebug("slotDealWithFileType, 获取网络FileType数据成功!");
+    slotDealWithTextType();
     emit signalDealWithFileTypeFinished(file_name);
 }
 
@@ -334,7 +359,29 @@ void MemoWidget::slotDealWithJsonType()
     icibaword->read(jsdoc.object());
     emit signalCommonMsg("获取Json数据成功!");
     qDebug("slotDealWithJsonType, 获取网络JsonType数据成功!");
-    emit signalDealWithJsonTypeFinished(icibaword->get_picture2(), REQ_FILE);
+
+
+    // 在进行第二次请求之前，先看看是否已经有了这个图片，然后在发送
+
+    QString file_name = icibaword->parsefilename();
+    qDebug() << file_name;
+    QString prefix = "";
+#ifdef QT_NO_DEBUG
+    if (file_name.endsWith(".jpg") || file_name.endsWith(".png")) {
+        prefix += "images/";
+    }
+#endif
+    file_name = prefix + file_name;
+    qDebug() << file_name;
+
+    bool isExist = QFile::exists(file_name);
+    if (!isExist) {
+        emit signalDealWithJsonTypeFinished(icibaword->get_picture2(), REQ_FILE);
+        qDebug() << "Pic: " << file_name << " not exist.";
+    } else {
+        emit signalDealWithFileTypeFinished(file_name);
+    }
+    // emit signalDealWithJsonTypeFinished(icibaword->get_content(), REQ_TEXT);
 }
 
 void MemoWidget::slotDealWithPicType()
@@ -345,7 +392,7 @@ void MemoWidget::slotDealWithPicType()
 
 void MemoWidget::slotDealWithTextType()
 {
-    // 重复了,待用
+    m_title->slotSetEveryDayEnglish(icibaword->get_content());
     return ;
 }
 
