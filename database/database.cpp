@@ -11,12 +11,11 @@
 DataBase::DataBase(QWidget *parent)
     :QWidget(parent)
 {
-    //qDebug() << QSqlDatabase::drivers();
     connectdb("/daily.db");
     doAfavour();
 }
 
-//TODO: 将数据接口同意移到database上来进行统一管理.,具体功能·在
+//TODO: 将数据接口同意移到database上来进行统一管理.,具体功能· 在
 //		把一些简单的slot函数实现。
 void DataBase::connectdb(QString database)
 {

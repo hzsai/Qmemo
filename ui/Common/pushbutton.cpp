@@ -12,7 +12,6 @@ PushButton::~PushButton()
 }
 void PushButton::initForm()
 {
-    //this->setFixedSize(30, 25);
     this->setFlat(true);
     this->setStyleSheet("QPushButton{border-radius: 5px;"
                         "color: #00f0f0;"

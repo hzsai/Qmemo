@@ -12,7 +12,7 @@
 #include <QColor>
 #include <QSettings>
 
-RightUpWidget::RightUpWidget(QWidget *parent):QWidget(parent)
+RightUpWidget::RightUpWidget(QWidget* parent) :QWidget(parent)
 {
     this->setFixedSize(620, 350);
     initForm();
@@ -26,12 +26,12 @@ RightUpWidget::~RightUpWidget()
 void RightUpWidget::initConnect()
 {
     connect(this, &RightUpWidget::signalSetPicPath,
-            this, &RightUpWidget::slotSetPicPath);
+        this, &RightUpWidget::slotSetPicPath);
 }
 
 void RightUpWidget::initForm()
 {
-    // 上一张、下一张按钮
+    // 上一张、下一张按 钮
     labelprev = new QPushButton(this);
     labelnext = new QPushButton(this);
 
@@ -53,9 +53,10 @@ void RightUpWidget::initForm()
     if (setting.contains("Qmemo/PicturePath")) {
         QString pth = setting.value("Qmemo/PicturePath").toString();
         this->picPath = pth;
-    } else {
-        // this->picPath = ":/images/20170420031214123.jpg";
-        this->picPath = "";
+    }
+    else {
+        this->picPath = ":/images/20170420031214123.jpg";
+        //this->picPath = "";
         setting.setValue("Qmemo/PicturePath", picPath);
     }
     loadImage(picPath);
@@ -80,7 +81,7 @@ void RightUpWidget::loadImage(QString fileName)
     repaint();
 }
 
-void RightUpWidget::paintEvent(QPaintEvent *)
+void RightUpWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -89,13 +90,13 @@ void RightUpWidget::paintEvent(QPaintEvent *)
     showSuitableSize(&painter);
 }
 
-void RightUpWidget::drawBackground(QPainter *p)
+void RightUpWidget::drawBackground(QPainter* p)
 {
     p->save();
     // QColor
     QLinearGradient lineargradient(QPointF(0, 0), QPointF(0, height()));
     lineargradient.setColorAt(0.0, QColor(100, 100, 100));
-    lineargradient.setColorAt(1.0,  QColor(60, 60, 60));
+    lineargradient.setColorAt(1.0, QColor(60, 60, 60));
     p->setPen(Qt::NoPen);
     p->setBrush(lineargradient);
     p->drawRect(rect());
@@ -103,13 +104,13 @@ void RightUpWidget::drawBackground(QPainter *p)
     p->restore();
 }
 
-void RightUpWidget::drawImage(QPainter *p)
+void RightUpWidget::drawImage(QPainter* p)
 {
-    if (m_currPixmap.isNull()) return ;
+    if (m_currPixmap.isNull()) return;
     showSuitableSize(p);
 }
 
-void RightUpWidget::showSuitableSize(QPainter *p)
+void RightUpWidget::showSuitableSize(QPainter* p)
 {
     p->save();
 
@@ -136,11 +137,11 @@ void RightUpWidget::slotSetPicPath()
     QSettings setting("./qmemo.ini", QSettings::IniFormat);
     // 接入菜单栏的选择路径设置path
     QString path = QFileDialog::getOpenFileName(this, tr("选择图片"),
-                                                tr("."));
+        tr("."));
     if (path.isEmpty()) {
         QMessageBox::warning(this, tr("提示"),
-                             tr("打开图片出错！"));
-        return ;
+            tr("打开图片出错！"));
+        return;
     }
     picPath = path;
     setting.setValue("Qmemo/PicturePath", path);
@@ -149,5 +150,3 @@ void RightUpWidget::slotSetPicPath()
     repaint();
     update();
 }
-
-

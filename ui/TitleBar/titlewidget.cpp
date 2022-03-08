@@ -5,6 +5,7 @@
 #include "ui/Common/menu.h"
 #include "ui/TitleBar/titlewidget.h"
 
+#include <thread>
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
@@ -39,7 +40,7 @@ void TitleWidget::Translator()
     m_TbnMenu->setIcon(QIcon(tr(":images/Settings.png")));
     m_TbnMenu->setToolTip(tr("菜单"));
 
-    m_TbnMenu_max->setToolTip(tr("最大化"));
+    m_TbnMenu_max->setToolTip(tr("最大 化"));
     m_TbnMenu_max->setIcon(QIcon(tr(":images/zoom.png")));
     m_TbnMenu_min->setToolTip(tr("最小化"));
     m_TbnMenu_min->setIcon(QIcon(tr(":images/minimize_3.png")));
@@ -86,15 +87,21 @@ void TitleWidget::initWidget()
     m_TbnTime->setStyleSheet("color:#646464; border: 1px solid gray; border-radius:2px; text-align:center;");
     m_TbnTime->setAlignment(Qt::AlignCenter);
     m_TbnTime->setText(QDateTime::currentDateTime().toString("hh:mm:ss"));
+    m_TbnTime->show();
+
+    // 更新时间显示
     m_Timer = new QTimer(this);
-    m_TimerPlay = new QTimer(this);
     connect(m_Timer, &QTimer::timeout,
             this, &TitleWidget::slotUpdateTime);
     m_Timer->start(1000);
-    m_TbnTime->show();
-    m_TimerPlay->start(1000);
+
+    // 检测整点半点
+    m_TimerPlay = new QTimer(this);
     connect(m_TimerPlay, &QTimer::timeout,
             this, &TitleWidget::slotPrePlay);
+    m_TimerPlay->start(1000);
+
+    // 播放
     connect(this, &TitleWidget::signalPlay,
             this, &TitleWidget::slotPlay);
 
@@ -169,7 +176,6 @@ void TitleWidget::slotPrePlay()
         minute = match.captured(2).toInt();
         second = match.captured(3).toInt();
     }
-    // qDebug() << hour << " " << minute << " " << second;
 
     if (hour > 12)
         hour -= 12;
@@ -183,7 +189,7 @@ void TitleWidget::slotPrePlay()
     else
         times = 1;
 
-    // like a event filter.
+    // 整点、半点报时
     if (flag && second == 0)
         emit signalPlay(times);
 }

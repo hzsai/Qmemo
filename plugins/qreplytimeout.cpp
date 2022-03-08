@@ -1,6 +1,6 @@
 #include "qreplytimeout.h"
 
-QReplyTimeout::QReplyTimeout(QNetworkReply *reply, const int timeout)
+QReplyTimeout::QReplyTimeout(QNetworkReply* reply, const int timeout)
     :QObject(reply)
 {
     Q_ASSERT(reply);
@@ -11,10 +11,10 @@ QReplyTimeout::QReplyTimeout(QNetworkReply *reply, const int timeout)
 
 void QReplyTimeout::onTimeout()
 {
-    QNetworkReply * reply = static_cast<QNetworkReply*>(parent());
+    QNetworkReply* reply = static_cast<QNetworkReply*>(parent());
     if (reply->isRunning()) {
         reply->abort();
         reply->deleteLater();
-        emit timeout(tr("请求超时！！！"));
+        emit timeout(tr("请求超 时！！！"));
     }
 }

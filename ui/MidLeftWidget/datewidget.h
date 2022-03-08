@@ -1,6 +1,10 @@
 #ifndef DATEWIDGET_H
 #define DATEWIDGET_H
 
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+
 #include <QWidget>
 #include <QLabel>
 
@@ -190,7 +194,6 @@ protected:
     void leaveEvent(QEvent *event);
 };
 
-// 明显，在一开始，我没有理解这是什么，必须重构了
 class DateWidget : public QWidget
 {
     Q_OBJECT

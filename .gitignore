@@ -1,4 +1,10 @@
+Qmemo.pro.user
 Qmemo.pro.user.*
+.vs/
+debug/
+release/
 daily.db
 qmemo.ini
 .qmake.stash
+Qmemo_resource.rc
+Qmemo_resource.aps

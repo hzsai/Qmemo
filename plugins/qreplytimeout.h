@@ -1,8 +1,12 @@
 #ifndef QREPLYTIMEOUT_H
 #define QREPLYTIMEOUT_H
 
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+
 /*
-    来自https://blog.csdn.net/liang19890820/article/details/53204396
+    来 自https://blog.csdn.net/liang19890820/article/details/53204396
     作者：一去二、三
 */
 
@@ -14,7 +18,7 @@ class QReplyTimeout : public QObject
 {
     Q_OBJECT
 public:
-    QReplyTimeout(QNetworkReply *reply, const int timeout);
+    QReplyTimeout(QNetworkReply* reply, const int timeout);
 
 signals:
     void timeout(QString msg); // 超时信号,重写了

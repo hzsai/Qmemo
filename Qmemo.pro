@@ -61,8 +61,20 @@ CONFIG += c++11
 DISTFILES += \
     extra/note.txt
 
+DESTDIR = ../bin/
+
 RC_ICONS = images/note_128px.ico
 
 CONFIG(debug) {
         DEFINES += KK
+}
+
+# msvc
+win32-msvc* {
+  QMAKE_CXXFLAGS += "/utf-8"
+  QMAKE_CFLAGS += "/utf-8"
+}
+# mingw
+win32-g++ {
+
 }

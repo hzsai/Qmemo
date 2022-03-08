@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QStringList>
 
+QString IcibaWord::icibaUrl = "http://open.iciba.com/dsapi/?date=%1";
+
 IcibaWord::IcibaWord():
     caption(""),
     content(""),
@@ -79,7 +81,7 @@ void IcibaWord::read(const QJsonObject &json)
 
 void IcibaWord::read_file()
 {
-    QFile in_file("today_weather.json");
+    QFile in_file("./today_weather.json");
 
     if (!in_file.open(QIODevice::ReadOnly)) {
         qWarning("read, open file failed.");
@@ -124,7 +126,7 @@ void IcibaWord::write_file()
     QJsonDocument outdoc(outobj);
     out_file.write(outdoc.toJson());
 
-    qDebug() << "写入成功";
+    qDebug() << "写入成 功";
 }
 
 void IcibaWord::print()
@@ -179,7 +181,7 @@ void IcibaWord::yesterday()
 void IcibaWord::day_transfer(int days)
 {
     m_datetime.setDate(QDate(m_year, m_month, m_day));
-    m_datetime.addDays(days);
+    m_datetime = m_datetime.addDays(days);
     m_year = m_datetime.currentDateTime().date().year();
     m_month = m_datetime.currentDateTime().date().month();
     m_day = m_datetime.currentDateTime().date().day();

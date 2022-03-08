@@ -1,6 +1,10 @@
 #ifndef MEMOWIDGET_H
 #define MEMOWIDGET_H
 
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+
 #include <QWidget>
 #include <QFrame>
 #include <QNetworkAccessManager>
@@ -56,7 +60,7 @@ public slots:
     void slotShowMax();
     void slotShowMin();
 
-    // 处理来自QNetAccessManager的返回数据
+    // 处理来自QNetAccessManager的返回数 据
     void slotDealWithRequest();
     void slotDealWithFileType();
     void slotDealWithJsonType();
@@ -80,22 +84,22 @@ private:
     QPoint m_point;
     QRect m_location;
 
-    TitleWidget *m_title;
-    RightDownWidget *m_rightDownWidget;
-    RightUpWidget *m_rightUpWidget;
-    DateWidget *m_leftDateWidget;
+    TitleWidget *m_title{nullptr};
+    RightDownWidget *m_rightDownWidget{nullptr};
+    RightUpWidget *m_rightUpWidget{nullptr};
+    DateWidget *m_leftDateWidget{nullptr};
 
-    QHBoxLayout *m_midLayout;
+    QHBoxLayout *m_midLayout{nullptr};
 
-    QVBoxLayout *m_maintLayout;
-    QVBoxLayout *m_rightLayout;
+    QVBoxLayout *m_maintLayout{nullptr};
+    QVBoxLayout *m_rightLayout{nullptr};
 
-    DataBase *database;
+    DataBase *database{nullptr};
 
-    IcibaWord *icibaword;
+    IcibaWord *icibaword{nullptr};
 
-    QNetworkAccessManager *qnam;
-    QNetworkReply *reply;
+    QNetworkAccessManager *qnam{nullptr};
+    QNetworkReply *reply{nullptr};
 
 };
 

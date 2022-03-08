@@ -46,7 +46,7 @@ void RightDownWidget::initForm()
 
 void RightDownWidget::initWidget()
 {
-    //文本编辑区
+    //文本编辑 区
     m_textEdit = new QTextEdit(this);
     m_textEdit->setWordWrapMode(QTextOption::WordWrap);
 

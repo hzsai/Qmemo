@@ -1,6 +1,10 @@
 #ifndef RIGHTDOWNWIDGET_H
 #define RIGHTDOWNWIDGET_H
 
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+
 #include <QWidget>
 
 class QTextEdit;
@@ -18,7 +22,7 @@ public:
     QTextEdit *m_textEdit;
     bool maybeSave();
     QPushButton *m_save;
-    QString currDate;			//用于外部接入数据。
+    QString currDate;			//用于外部接入数 据。
     QString prevDate;
 
 signals:

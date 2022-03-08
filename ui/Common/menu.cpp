@@ -30,7 +30,7 @@ void Menu::slotMenuVisiable()
     int maxHeight = QApplication::desktop()->height();
     this->setVisible(true);
 
-    //设置菜单的合理显：
+    //设置菜单的合理 显：
     if (pos.x() + this->width() > maxWidth) {
         width = -(this->width());
     }

@@ -1,6 +1,10 @@
 #ifndef ICIBA_WORD_H
 #define ICIBA_WORD_H
 
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+
 #include <QString>
 #include <QDateTime>
 #include<QJsonObject>
@@ -8,14 +12,17 @@
 class IcibaWord
 {
 public:
+
+    static QString icibaUrl;
+
     explicit IcibaWord();
 
-    // 初始化
+    // 初始 化
     void init();
     void parsedate(QString date);
     void day_transfer(int days);
 
-    // 管理json读写
+    // 管理json读 写
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
     void read_file();

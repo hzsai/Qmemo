@@ -1,6 +1,10 @@
 #ifndef MENU_H
 #define MENU_H
 
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
+
 #include <QMenu>
 
 class Menu : public QMenu

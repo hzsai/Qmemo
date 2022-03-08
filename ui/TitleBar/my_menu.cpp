@@ -10,7 +10,7 @@
 #include "ui/MidRightUpWidget/rightupwidget.h"
 
 
-MyMenu::MyMenu(QWidget *parent)
+MyMenu::MyMenu(QWidget* parent)
     :Menu(parent)
 {
     this->initWidget();
@@ -29,7 +29,7 @@ void MyMenu::translator()
     m_actionQuit->setText(tr("退出"));
     m_actionSettingFont->setText(tr("设置字体"));
 
-    aboutAuthur->setText(tr("关于Authur"));
+    aboutAuthur->setText(tr("关于作者"));
     aboutQt->setText(tr("关于Qt"));
 }
 
@@ -78,7 +78,7 @@ void MyMenu::initWidget()
     //设置二级菜单
     m_menuSetting->addAction(m_actionSettingFont);
 
-    //菜单添加图片实例
+    //菜单添加图片实 例
     //m_menuAbout->setIcon(QIcon("qrc:images/menuSetting.png"));
     //m_actionQuit->setIcon(QIcon("qrc:images/close.png"));
 
@@ -102,11 +102,11 @@ void MyMenu::initWidget()
 void MyMenu::initConnect()
 {
     connect(aboutQt, &QAction::triggered,
-            this, &QApplication::aboutQt);
+        this, &QApplication::aboutQt);
     connect(aboutAuthur, &QAction::triggered,
-            this, &MyMenu::slotAboutAuthur);
+        this, &MyMenu::slotAboutAuthur);
     connect(m_help, &QAction::triggered,
-            this, &MyMenu::slotHelp);
+        this, &MyMenu::slotHelp);
 }
 
 
@@ -126,10 +126,10 @@ void MyMenu::slotHelp()
 {
     QMessageBox box;
     box.information(this, tr("帮助"), tr("帮助<br>(1) 在相应日期下写日记并且保存就行啦，界面就显示了全部功能。<br>"
-                                       "(2) 菜单设置图片和字体。半点和整点会报时(⊙o⊙)哦^_^<br>"
-                                       "(3) 删除掉执行文件所在目录下的<strong>qmemo.ini</strong>文件可以再次看到那张帅帅的图片(⊙o⊙)哦<br>"
-                                       "(4) 查看日记前先<strong>双击</strong>和<strong>单击</strong>某个日期哦<br>"
-                                       "(5) 图标来自www.easyicon.net,非常感谢！！！"), QMessageBox::Yes);
+        "(2) 菜单设置图片和字体。半点和整点会报时(⊙o⊙)哦^_^<br>"
+        "(3) 删除掉执行文件所在目录下的<strong>qmemo.ini</strong>文件可以再次看到那张帅帅的图片(⊙o⊙)哦<br>"
+        "(4) 查看日记前先<strong>双击</strong>和<strong>单击</strong>某个日期哦<br>"
+        "(5) 图标来自www.easyicon.net,非常感谢！！！"), QMessageBox::Yes);
 }
 
 void MyMenu::slotShowTodayWeather()
