@@ -1,5 +1,7 @@
 Qmemo.pro.user
 Qmemo.pro.user.*
+build-*
+bin/
 .vs/
 debug/
 release/
