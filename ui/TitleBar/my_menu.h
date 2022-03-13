@@ -38,26 +38,26 @@ public:
 public:
 
     //about
-    Menu *m_menuAbout;
-    QAction *aboutAuthur;
-    QAction *aboutQt;
+    Menu *m_menuAbout{nullptr};
+    QAction *aboutAuthur{nullptr};
+    QAction *aboutQt{nullptr};
     //setting
-    QAction *m_actionOpenPic;
+    QAction *m_actionOpenPic{nullptr};
 
-    QAction *m_help;
+    QAction *m_help{nullptr};
 
     //setting action
-    Menu *m_menuSetting;
-    QAction *m_actionSettingFont;
+    Menu *m_menuSetting{nullptr};
+    QAction *m_actionSettingFont{nullptr};
     //quit action
-    QAction *m_actionQuit;
+    QAction *m_actionQuit{nullptr};
     QString picPath;
 
     // weather
-    QAction *aboutTodayWeather;
+    QAction *aboutTodayWeather{nullptr};
 
     // 每日一图
-    QAction *getEveryDayPicture;
+    QAction *getEveryDayPicture{nullptr};
 };
 
 #endif // MY_MENU_H

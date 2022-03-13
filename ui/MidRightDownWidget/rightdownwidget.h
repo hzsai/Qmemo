@@ -19,23 +19,24 @@ class RightDownWidget : public QWidget
 public:
     explicit RightDownWidget(QWidget *parent = 0);
     ~RightDownWidget();
-    QTextEdit *m_textEdit;
+    QTextEdit *m_textEdit{nullptr};
     bool maybeSave();
-    QPushButton *m_save;
+    QPushButton *m_save{nullptr};
     QString currDate;			//用于外部接入数 据。
     QString prevDate;
 
 signals:
     void signalSetIcon(int );
     void signalRightDownWidgetSave(QString &, int);
+    void sig_dailyBoxMessage(QString str);
 
 public slots:
     void slotSetIcon();
 
 private:
 
-    QHBoxLayout *m_menuLayout;
-    QVBoxLayout *m_mainLayout;
+    QHBoxLayout *m_menuLayout{nullptr};
+    QVBoxLayout *m_mainLayout{nullptr};
 
     bool docWasModified;
     QString m_time;

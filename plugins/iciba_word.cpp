@@ -35,14 +35,19 @@ void IcibaWord::init()
     m_datetime.setDate(QDate(m_year, m_month, m_day));
 }
 
-QString IcibaWord::get_picture2()
+QString IcibaWord::getPicture2() const
 {
     return picture2;
 }
 
-QString IcibaWord::get_content()
+QString IcibaWord::getContent() const
 {
     return content;
+}
+
+QString IcibaWord::getNote() const
+{
+    return this->note;
 }
 
 int IcibaWord::get_year()

@@ -14,7 +14,7 @@
 #include <QSettings>
 #include <QDebug>
 #include <QStyle>
-
+#include <QCoreApplication>
 
 RightDownWidget::RightDownWidget(QWidget * parent)
     :QWidget(parent)
@@ -33,13 +33,15 @@ void RightDownWidget::initForm()
     this->setFocusPolicy(Qt::ClickFocus);
     this->setObjectName(tr("rightdownwidget"));
     this->setFixedSize(620, 250);
-    QSettings setting("./qmemo.ini", QSettings::IniFormat);
+    QString filepath = QCoreApplication::applicationDirPath() + "/qmemo.ini";
+    QSettings setting(filepath, QSettings::IniFormat);
+    setting.setIniCodec("utf-8");
     if (setting.contains("Qmemo/TextfontFamily")) {
         QFont f;
         QString fontFamily = setting.value("Qmemo/TextfontFamily").toString();
         qint64 fontpointSize = setting.value("Qmemo/TextpointSize").toInt();
         f.setFamily(fontFamily);
-        f.setPixelSize(fontpointSize);
+        f.setPointSize(fontpointSize);
         m_textEdit->setFont(f);
     }
 }
@@ -109,17 +111,23 @@ bool RightDownWidget::maybeSave()
 {
     if (!m_textEdit->document()->isModified())
         return false;
-    const QMessageBox::StandardButton ret
-            = QMessageBox::warning(this, tr("提醒QAQ"),
-                                   tr("文件被更改了,"
-                                      "保存吗?"),
-                                   QMessageBox::Save | QMessageBox::Discard
-                                   | QMessageBox::Cancel);
+    QString strDate = currDate;
+    QString infoText = QString("日期<b> %1 </b>有内容被修改了\n保存吗?").arg(strDate);
+
+    QMessageBox messageBox;
+
+    messageBox.setInformativeText(infoText);
+    messageBox.setStandardButtons(QMessageBox::Ok|QMessageBox::Cancel);
+
+    messageBox.setButtonText(QMessageBox::Ok, "保存");
+    messageBox.setButtonText(QMessageBox::Cancel, "取消");
+
+    auto ret = messageBox.exec();
     switch (ret) {
-    case QMessageBox::Save:
+    case QMessageBox::Ok:
         slotSave();
         return true;
-    case QMessageBox::Discard:
+    case QMessageBox::Cancel:
         return false;
     default:
         break;
@@ -157,6 +165,7 @@ void RightDownWidget::slotSave()
         setWindowModified(false);
         m_textEdit->document()->setModified(false);
         docWasModified = false;
+        emit sig_dailyBoxMessage("保存成功!");
     } else {
         QMessageBox::warning(this, tr("提示"), tr("因未选择日期，未能保存成功，(。﹏。*)"));
         if (!m_textEdit->document()->toPlainText().isEmpty()) {
@@ -183,7 +192,9 @@ void RightDownWidget::slotChoiceFont()
 
     m_textEdit->setFont(font);
 
-    QSettings setting("./qmemo.ini", QSettings::IniFormat);
+    QString filepath = QCoreApplication::applicationDirPath() + "/qmemo.ini";
+    QSettings setting(filepath, QSettings::IniFormat);
+    setting.setIniCodec("utf-8");
     setting.setValue("Qmemo/TextFont", font.key());
     setting.setValue("Qmemo/TextfontFamily", font.family());
     setting.setValue("Qmemo/TextpointSize", font.pointSize());
@@ -197,9 +208,12 @@ void RightDownWidget::slotShowMemo()
 
 void RightDownWidget::setTextEdit(QString &string)
 {
-    int flag = maybeSave();
-    if (flag)
-        return ;
+    bool saved = maybeSave();
+
+    if (!saved)
+    {
+    }
+
     m_textEdit->setText(string);
 
     update();

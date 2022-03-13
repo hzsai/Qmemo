@@ -18,7 +18,7 @@ class QReplyTimeout : public QObject
 {
     Q_OBJECT
 public:
-    QReplyTimeout(QNetworkReply* reply, const int timeout);
+    QReplyTimeout(QNetworkReply* reply, const int timeout = 10);
 
 signals:
     void timeout(QString msg); // 超时信号,重写了

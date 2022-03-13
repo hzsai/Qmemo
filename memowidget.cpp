@@ -27,6 +27,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
+#include <QScreen>
+#include <thread>
 
 bool g_WidgetIsMin = false;
 
@@ -38,6 +40,7 @@ MemoWidget::MemoWidget(QWidget* parent)
     this->initWidget();
     this->initForm();
     this->initConnect();
+    postworkAfterInit();
 }
 
 MemoWidget::~MemoWidget()
@@ -51,6 +54,14 @@ void MemoWidget::initBaseInfo()
 {
     icibaword = new IcibaWord();
     qnam = new QNetworkAccessManager(this);
+}
+
+void MemoWidget::postworkAfterInit()
+{
+    std::thread t([&](){
+        m_title->m_menu->getEveryDayPicture->trigger();
+    });
+    t.detach();
 }
 
 void MemoWidget::initForm()
@@ -137,6 +148,8 @@ void MemoWidget::initConnect()
             m_leftDateWidget->calendar, &CalendarWidget::setDay);
         connect(m_leftDateWidget->calendar->labelDay[i], &DayLabel::signalSetRedBox,
             m_leftDateWidget->calendar, &CalendarWidget::slotSetRedBox);
+        connect(m_leftDateWidget->calendar->labelDay[i], &DayLabel::sig_setFixedCurrDay,
+                m_leftDateWidget->calendar, &CalendarWidget::slt_setFixedCurrDay);
     }
     // refresh LabelIcon
     // 相应日期的变化
@@ -161,10 +174,14 @@ void MemoWidget::initConnect()
     void (RightUpWidget:: * slotloadimage) (QString) = &RightUpWidget::slotLoadImage;
     connect(this, signaldealwithfilefinished, m_rightUpWidget, slotloadimage);
 
+    // 消息显示
     connect(this, &MemoWidget::signalParseJsonError,
         m_leftDateWidget, &DateWidget::sltDisplaymsg);
     connect(this, &MemoWidget::signalCommonMsg,
         m_leftDateWidget, &DateWidget::sltDisplaymsg);
+    connect(m_rightDownWidget, &RightDownWidget::sig_dailyBoxMessage,
+        m_leftDateWidget, &DateWidget::sltDisplaymsg);
+
     connect(m_rightUpWidget->labelnext, &QPushButton::clicked,
         m_leftDateWidget->calendar, &CalendarWidget::sltShowNextDay);
     connect(m_rightUpWidget->labelprev, &QPushButton::clicked,
@@ -202,7 +219,7 @@ void MemoWidget::slotShowMax()
     }
     else {
         m_location = this->geometry();
-        this->setGeometry(qApp->desktop()->availableGeometry());
+        this->setGeometry(QApplication::primaryScreen()->availableGeometry());
         emit signalMax(BtnMin);
     }
 
@@ -231,7 +248,7 @@ void MemoWidget::createRequest(QString url)
     if (qnam == nullptr)
         return;
     reply = qnam->get(QNetworkRequest(QUrl(url)));
-    QReplyTimeout* replyTimeout = new QReplyTimeout(reply, 3000);
+    QReplyTimeout* replyTimeout = new QReplyTimeout(reply, 10000);
     connect(replyTimeout, &QReplyTimeout::timeout, [=]() {
         qDebug() << "createRequest, Timeout";
     });
@@ -254,7 +271,7 @@ void MemoWidget::createRequest(QString url, int type)
     req.setSslConfiguration(sslConfiguration);
 
     reply = qnam->get(req);
-    QReplyTimeout* replyTimeout = new QReplyTimeout(reply, 3000);
+    QReplyTimeout* replyTimeout = new QReplyTimeout(reply, 10000);
     connect(replyTimeout, &QReplyTimeout::timeout,
         m_leftDateWidget, &DateWidget::sltDisplaymsg);
     connect(replyTimeout, &QReplyTimeout::timeout, [=]() {
@@ -311,6 +328,11 @@ void MemoWidget::slotDealWithRequestWithParam(int type)
     }
 }
 
+void MemoWidget::setEverydayEnglish()
+{
+    m_title->slotSetEveryDayEnglish(*icibaword);
+}
+
 void MemoWidget::slotDealWithFileType()
 {
     if (reply == nullptr)
@@ -321,13 +343,14 @@ void MemoWidget::slotDealWithFileType()
             << reply->error();
         return;
     }
+
     //保存有后缀类型的文件
     // 从icibaword中获取url地址解析
     QString file_name = icibaword->parsefilename();
     qDebug() << file_name;
-    QString prefix = "";
+    QString prefix = QCoreApplication::applicationDirPath();
     if (file_name.endsWith(".jpg") || file_name.endsWith(".png")) {
-        prefix += "./images/";
+        prefix += "/images/";
     }
     file_name = prefix + file_name;
     QFile out_file(file_name);
@@ -337,11 +360,10 @@ void MemoWidget::slotDealWithFileType()
         qWarning("slotDealWithFileType, file open failed.");
         return;
     }
+
     // 再读取reply的数据
     QByteArray bytearray = reply->readAll();
     out_file.write(bytearray);
-    qDebug("slotDealWithFileType, 获取网络FileType数据成功!");
-    slotDealWithTextType();
     emit signalDealWithFileTypeFinished(file_name);
 }
 
@@ -357,7 +379,8 @@ void MemoWidget::slotDealWithJsonType()
     }
     // 将获得的json文件写入磁盘，并读到对象icibaword中待用
     QByteArray bytearray = reply->readAll();
-    QFile out_file("./today_weather.json");
+    QString filepath = QCoreApplication::applicationDirPath() + "/today_weather.json";
+    QFile out_file(filepath);
 
     if (!out_file.open(QIODevice::WriteOnly)) {
         qWarning("getting, file open failed.");
@@ -375,19 +398,22 @@ void MemoWidget::slotDealWithJsonType()
     emit signalCommonMsg("获取Json数据成功!");
     qDebug("slotDealWithJsonType, 获取网络JsonType数据成功!");
 
+    // 设置返回的内容到界面
+    setEverydayEnglish();
+
     // 在进行第二次请求之前，先看看是否已经有了这个图片，然后在发送
     QString file_name = icibaword->parsefilename();
     qDebug() << file_name;
-    QString prefix = "";
+    QString prefix = QCoreApplication::applicationDirPath();
     if (file_name.endsWith(".jpg") || file_name.endsWith(".png")) {
-        prefix += "./images/";
+        prefix += "/images/";
     }
     file_name = prefix + file_name;
     qDebug() << file_name;
 
     bool isExist = QFile::exists(file_name);
     if (!isExist) {
-        emit signalDealWithJsonTypeFinished(icibaword->get_picture2(), REQ_FILE);
+        emit signalDealWithJsonTypeFinished(icibaword->getPicture2(), REQ_FILE);
         qDebug() << "Pic: " << file_name << " not exist.";
     }
     else {
@@ -404,7 +430,7 @@ void MemoWidget::slotDealWithPicType()
 
 void MemoWidget::slotDealWithTextType()
 {
-    m_title->slotSetEveryDayEnglish(icibaword->get_content());
+
 }
 
 bool MemoWidget::eventFilter(QObject* obj, QEvent* event)

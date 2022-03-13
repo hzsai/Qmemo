@@ -15,6 +15,8 @@
 #include <QTimer>
 #include <QDateTime>
 #include <QDebug>
+#include <QEventLoop>
+#include <QCoreApplication>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 
@@ -115,18 +117,18 @@ void TitleWidget::initWidget()
     m_TbnMenu_close = new QPushButton(this);
 
     m_mainLayout = new QHBoxLayout(this);
-    m_mainLayout->addSpacing(15);
+    m_mainLayout->addSpacing(0);
     m_mainLayout->addWidget(m_TbnTime);
-    m_mainLayout->addSpacing(20);
+    m_mainLayout->addSpacing(5);
     m_mainLayout->addWidget(everydayEnglish);
 
     m_mainLayout->addStretch();
     m_mainLayout->addWidget(m_TbnMenu);
-    m_mainLayout->addSpacing(10);
+    m_mainLayout->addSpacing(5);
     m_mainLayout->addWidget(m_TbnMenu_min);
     m_mainLayout->addWidget(m_TbnMenu_max);
     m_mainLayout->addWidget(m_TbnMenu_close);
-    m_mainLayout->addSpacing(6);
+    m_mainLayout->addSpacing(5);
 
     this->setLayout(m_mainLayout);
     m_menu = new MyMenu(this);
@@ -136,8 +138,26 @@ void TitleWidget::initWidget()
     playList = new QMediaPlaylist(this);
     player->setPlaybackRate(1.0);
     player->setVolume(50);
-    player->setPlaylist(playList);
+    player->setPlaylist(nullptr);
 
+    player->setMedia(QMediaContent(QUrl("qrc:sounds/tictoe.mp3")), nullptr);
+
+    connect(player, QOverload<QMediaPlayer::Error>::of(&QMediaPlayer::error),
+        this, [this](QMediaPlayer::Error error) {
+            qDebug() << "MediaPlayerError: " << error << player->errorString();
+    });
+
+    connect(this, &TitleWidget::sig_play, this, &TitleWidget::slt_playerPlay, Qt::QueuedConnection);
+
+    connect(player, &QMediaPlayer::stateChanged, this, [&](QMediaPlayer::State status) {
+        if (status == QMediaPlayer::State::StoppedState)
+        {
+            if (playTimes_--)
+            {
+                player->play();
+            }
+        }
+    });
 }
 
 //信号槽连接
@@ -151,9 +171,17 @@ void TitleWidget::initConnect()
             this, &TitleWidget::signalClose);
 }
 
-void TitleWidget::slotSetEveryDayEnglish(const QString &parse)
+void TitleWidget::slotSetEveryDayEnglish(const IcibaWord &word)
 {
-    everydayEnglish->setText(parse);
+    QString txt = word.getContent() + " ( " + word.getNote() + ")";
+    everydayEnglish->setText(txt);
+}
+
+void TitleWidget::slt_playerPlay()
+{
+    this->playTimes_--;
+
+    player->play();
 }
 
 void TitleWidget::slotUpdateTime()
@@ -183,23 +211,62 @@ void TitleWidget::slotPrePlay()
         flag = true;
     else
         flag = false;
+#ifdef TEST_PLAYER_ALERT
+    flag = true;
+#endif
 
     if (minute == 0)
         times = hour;
     else
         times = 1;
+    // 00:00:00
+    if (hour == 0 && minute == 0 && second == 0)
+    {
+        times = 12;
+    }
 
     // 整点、半点报时
     if (flag && second == 0)
+    {
+        player->stop();
         emit signalPlay(times);
+    }
 }
 
 void TitleWidget::slotPlay(int times)
 {
-    playList->clear();
-    for (int i = 0; i < times; i++)
-        playList->addMedia(QUrl("qrc:sounds/tictoe.mp3"));
-    playList->setCurrentIndex(0);
+    if (times <= 0)
+        return;
 
-    player->play();
+    this->playTimes_ = times;
+
+    emit sig_play();
+
+    // 使用QMediaPlaylist播放时，player->play()就crash了，暂没找到原因
+	//QMediaPlaylist* nplayList = new QMediaPlaylist(this);
+
+	//for (int i = 0; i < times; i++)
+	//{
+	//	bool succ = nplayList->addMedia(QMediaContent(QUrl("qrc:sounds/tictoe.mp3")));
+	//	qDebug() << "Add media :" << succ;
+	//}
+
+	//player->setPlaylist(nplayList);
+	//if (player->playlist() != playList)
+	//{
+	//	std::swap(nplayList, playList);
+	//	delete nplayList;
+	//}
+
+ //   qDebug() << player->playlist()->currentIndex();
+ //   if (player->isAudioAvailable())
+ //   {
+ //       try {
+ //           player->play();
+ //       }
+ //       catch (std::exception e)
+ //       {
+ //           qDebug() << e.what();
+ //       }
+ //   }
 }

@@ -73,7 +73,7 @@ void MyMenu::initWidget()
 
     // 每日图片
     getEveryDayPicture = new QAction(this);
-    getEveryDayPicture->setText(tr("每一图片"));
+    getEveryDayPicture->setText(tr("每日图文"));
 
     //设置二级菜单
     m_menuSetting->addAction(m_actionSettingFont);

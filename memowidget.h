@@ -41,6 +41,7 @@ private:
     void initWidget();
     void initConnect();
     void initBaseInfo();
+    void postworkAfterInit();
 
     // 创建请求
     void createRequest();
@@ -67,6 +68,8 @@ public slots:
     void slotDealWithPicType();
     void slotDealWithTextType();
     void slotDealWithRequestWithParam(int type);
+
+    void setEverydayEnglish();
 
 
 protected:

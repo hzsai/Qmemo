@@ -68,14 +68,19 @@ public:
     void showDay(int nDay);
 
     int m_nDay;
-    QLabel *labelIcon;
+    QLabel *labelIcon{nullptr};
     void setMemo(QString memo);
+
+public:
+    void pre_setRightDownWidget();
 signals:
     void signalMemo(QString &);
     void signalCurrDate(QString &);
     void signalCurrDay(int day);
     void signalSetRedBox();
+    void sig_setFixedCurrDay(QString &date);
 private:
+
     QString m_strListMemo;
 protected:
     void enterEvent(QEvent *event);
@@ -105,11 +110,13 @@ public:
     void setDay(int day);
     int selected;
 
+
+    DayLabel* currDayLabel() const;
     void jumpToddate(int yeay, int month, int day);
 
 public:
-    QWidget *widgetBody;
-    DayLabel *labelDay[42];
+    QWidget *widgetBody{nullptr};
+    DayLabel *labelDay[42]{nullptr};
     void initDate();
     void initData();
 
@@ -125,50 +132,51 @@ signals:
 public slots:
     void changeTitle(QString &str);
     void slotSetLabelDayShow(int day);
+    void slt_setFixedCurrDay(QString &date);
     void setLabelIcon(int );
     void slotRefreshMemo(QString &, int);
     void slotSetRedBox();
 
 private:
-    QVBoxLayout *verLayoutCalender;
-    QHBoxLayout *horLayoutJump;
-    QVBoxLayout *verLayoutJump;
-    QVBoxLayout *verLayoutDate;
-    QVBoxLayout *verLayoutWeek;
-    QWidget *widgetJump;
+    QVBoxLayout *verLayoutCalender{nullptr};
+    QHBoxLayout *horLayoutJump{nullptr};
+    QVBoxLayout *verLayoutJump{nullptr};
+    QVBoxLayout *verLayoutDate{nullptr};
+    QVBoxLayout *verLayoutWeek{nullptr};
+    QWidget *widgetJump{nullptr};
 
-    QVBoxLayout *verlayout1Widget;
-    QVBoxLayout *verlayout2Widget;
-    QVBoxLayout *verlayout3Widget;
+    QVBoxLayout *verlayout1Widget{nullptr};
+    QVBoxLayout *verlayout2Widget{nullptr};
+    QVBoxLayout *verlayout3Widget{nullptr};
 
-    QGridLayout *widgetJumpLayout;
+    QGridLayout *widgetJumpLayout{nullptr};
 
-    QWidget *widgetTitle;
-    QLabel *labelTitle;
-    QPushButton *btnPrevMonth;
-    QPushButton *btnNextMonth;
-    QHBoxLayout *horLayoutTitle;
+    QWidget *widgetTitle{nullptr};
+    QLabel *labelTitle{nullptr};
+    QPushButton *btnPrevMonth{nullptr};
+    QPushButton *btnNextMonth{nullptr};
+    QHBoxLayout *horLayoutTitle{nullptr};
 
-    QWidget *widgetWeek;
-    QLabel *labelWeek[Week];
-    QHBoxLayout *horLayoutWeek;
+    QWidget *widgetWeek{nullptr};
+    QLabel *labelWeek[Week]{nullptr};
+    QHBoxLayout *horLayoutWeek{nullptr};
 
-    QGridLayout *gridLayoutBody;
-    QGridLayout *gridLayoutWeek;
+    QGridLayout *gridLayoutBody{nullptr};
+    QGridLayout *gridLayoutWeek{nullptr};
 
-    QWidget *widgetRight;
+    QWidget *widgetRight{nullptr};
 
-    QLabel *labelShowToday;
-    QLabel *labelShowWeek;
-    QLabel *labelShowDay;
-    QLabel *labelShowNYear;
-    QLabel *labelShowLunarDate;
-    QLabel *labelSpacer;
-    QLabel *labelScheduleTitle;
-    QLabel *labelSchedule;
+    QLabel *labelShowToday{nullptr};
+    QLabel *labelShowWeek{nullptr};
+    QLabel *labelShowDay{nullptr};
+    QLabel *labelShowNYear{nullptr};
+    QLabel *labelShowLunarDate{nullptr};
+    QLabel *labelSpacer{nullptr};
+    QLabel *labelScheduleTitle{nullptr};
+    QLabel *labelSchedule{nullptr};
 
-    QVBoxLayout *verlayoutWidgetRight;
-    QHBoxLayout *horLayoutGlobal;
+    QVBoxLayout *verlayoutWidgetRight{nullptr};
+    QHBoxLayout *horLayoutGlobal{nullptr};
 
 
 
@@ -204,40 +212,40 @@ public:
 
 public:
     // 日历组件
-    CalendarWidget *calendar;
+    CalendarWidget *calendar{nullptr};
 
-    QWidget *widgetRight;
+    QWidget *widgetRight{nullptr};
 
-    QVBoxLayout *verlayoutWidgetRight;
-    QHBoxLayout *horLatoutWidget;
+    QVBoxLayout *verlayoutWidgetRight{nullptr};
+    QHBoxLayout *horLatoutWidget{nullptr};
 
-    QFormLayout *layoutJump;
+    QFormLayout *layoutJump{nullptr};
 
     // 年月显示
-    QGroupBox *groupBoxBottom;
-    QLabel *labelYearJump;
-    QLabel *labelMonthJump;
-    QLabel *labelDayJump;
+    QGroupBox *groupBoxBottom{nullptr};
+    QLabel *labelYearJump{nullptr};
+    QLabel *labelMonthJump{nullptr};
+    QLabel *labelDayJump{nullptr};
 
     // 跳转输入
-    QLineEdit *editYearJump;
-    QLineEdit *editMonthJump;
-    QLineEdit *editDayJump;
+    QLineEdit *editYearJump{nullptr};
+    QLineEdit *editMonthJump{nullptr};
+    QLineEdit *editDayJump{nullptr};
 
     // 再更新：这里最好用消息队列来处理显示信息哦，暂时留坑
     // 消息显示条
-    QLabel *labelMsg;
+    QLabel *labelMsg{nullptr};
 
     // 简单及时
-    QTimer *m_timer;
+    QTimer *m_timer{nullptr};
 
     // 两个跳转按钮
-    QPushButton *btnDateJump;
-    QPushButton *btnToday;
+    QPushButton *btnDateJump{nullptr};
+    QPushButton *btnToday{nullptr};
 
     // 布局
-    QHBoxLayout *horLayoutJump;
-    QVBoxLayout *verLayoutAll;
+    QHBoxLayout *horLayoutJump{nullptr};
+    QVBoxLayout *verLayoutAll{nullptr};
 
 signals:
 

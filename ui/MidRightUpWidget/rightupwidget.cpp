@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QColor>
 #include <QSettings>
+#include <QCoreApplication>
 
 RightUpWidget::RightUpWidget(QWidget* parent) :QWidget(parent)
 {
@@ -49,7 +50,9 @@ void RightUpWidget::initForm()
 
     // 图片
     this->picPath = "";
-    QSettings setting("./qmemo.ini", QSettings::IniFormat);
+    QString filepath = QCoreApplication::applicationDirPath() + "/qmemo.ini";
+    QSettings setting(filepath, QSettings::IniFormat);
+    setting.setIniCodec("utf-8");
     if (setting.contains("Qmemo/PicturePath")) {
         QString pth = setting.value("Qmemo/PicturePath").toString();
         this->picPath = pth;
@@ -134,7 +137,9 @@ void RightUpWidget::showSuitableSize(QPainter* p)
 
 void RightUpWidget::slotSetPicPath()
 {
-    QSettings setting("./qmemo.ini", QSettings::IniFormat);
+    QString filepath = QCoreApplication::applicationDirPath() + "/qmemo.ini";
+    QSettings setting(filepath, QSettings::IniFormat);
+    setting.setIniCodec("utf-8");
     // 接入菜单栏的选择路径设置path
     QString path = QFileDialog::getOpenFileName(this, tr("选择图片"),
         tr("."));

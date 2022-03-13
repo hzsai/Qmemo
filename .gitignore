@@ -10,3 +10,7 @@ qmemo.ini
 .qmake.stash
 Qmemo_resource.rc
 Qmemo_resource.aps
+today_weather.json
+Qmemo.vcxproj
+Qmemo.vcxproj.filters
+Qmemo.vcxproj.user

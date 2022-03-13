@@ -86,14 +86,38 @@ void CalendarWidget::setDay(int day)
     emit signalLabelDayShow(day);
 }
 
+DayLabel *CalendarWidget::currDayLabel() const
+{
+    int nWeek = Date::getFirstDayOfWeek(m_nYear, m_nMonth);
+    int idx = m_nDay + nWeek - 1;
+
+    if (idx < 0 || idx > 41)
+        return nullptr;
+    return labelDay[m_nDay + nWeek - 1];
+}
+
 void CalendarWidget::jumpToddate(int year, int month, int day)
 {
     setYear(year);
     setMonth(month);
     setDay(day);
 
+    // 左边日期显示和数据
     initDate();
     initData();
+
+    QString dateStr = QString("%1-%2-%3")
+        .arg(year, 4, 10, QChar('0'))
+        .arg(month, 2, 10, QChar('0'))
+        .arg(day, 2, 10, QChar('0'));;
+
+    // 右下日期框内容设置
+    DayLabel *labelPtr = currDayLabel();
+    if (labelPtr)
+    {
+        // 设置日历内容
+        labelPtr->pre_setRightDownWidget();
+    }
 }
 
 void CalendarWidget::initWidget()
@@ -201,8 +225,14 @@ void CalendarWidget::initWidget()
 void CalendarWidget::slotSetLabelDayShow(int day)
 {
     labelShowDay->setText(tr("%1").arg(day));
-    qDebug() << day;
-    fixedCurrDay = day;
+}
+
+void CalendarWidget::slt_setFixedCurrDay(QString &date)
+{
+    // xxxx-xx-xx form
+    int day = date.split("-").at(2).toInt();
+
+    this->fixedCurrDay = day;
 }
 
 void CalendarWidget::initDate()
@@ -215,6 +245,9 @@ void CalendarWidget::initDate()
     labelTitle->setText((tr("%1 年 %2 月")
         .arg(m_nYear, 2, 10, QChar('0'))
         .arg(m_nMonth, 2, 10, QChar('0'))));
+    //选中红框
+    fixedCurrDay = m_nDay;
+
     if (0 == nWeek) {
         for (int i = 0; i < 7; i++) {
             labelDay[i]->showDay((nPreMonDays - 7 + i + 1));
@@ -255,6 +288,10 @@ void CalendarWidget::initDate()
     // emit signalDayChanged();
 }
 
+/**
+ * @brief CalendarWidget::initData
+ * 从数据库获取设置日历的日志数据
+ */
 void CalendarWidget::initData()
 {
 
@@ -501,6 +538,14 @@ void DayLabel::setMemo(QString memo)
     labelIcon->setVisible(!memo.isEmpty());
 }
 
+void DayLabel::pre_setRightDownWidget()
+{
+    // signal to RightDownWidget
+    // 以下两个信号顺序不能调换
+    emit signalMemo(m_strListMemo);
+    emit signalCurrDate(currDate);
+}
+
 //进入的效果
 void DayLabel::enterEvent(QEvent* event)
 {
@@ -520,9 +565,6 @@ void DayLabel::leaveEvent(QEvent* event)
     if (PREV_MONTH_DAY == nProperty || NEXT_MONTH_DAY == nProperty)
         return;
     this->setStyleSheet(orig);
-    //if (this->bSelect) {
-    //    this->setStyleSheet("border: 2px solid red");
-    //}
     // 转发
     QLabel::leaveEvent(event);
     emit signalSetRedBox();
@@ -534,17 +576,17 @@ void DayLabel::mousePressEvent(QMouseEvent* event)
     // 点击有几个事件：
     // 1. 设置Editor的内容
     // 2. 设置大的那个日期label
-    // 3. 设置颜色变化，红框框
+    // 3. 设置颜色变化，红框框 --delete
     // 框框堆叠主要原因：在dayLabel上进行的操作会只在那个label更新
     // 要整个更新就要用，initDate()将界面重绘，但是重绘整个日历界面
     // 很消耗资源的, 权当是一个小小的bug吧，不修改了
     //
-    QString str = m_strListMemo;
     if (event->button() != Qt::LeftButton)
         return;
 
     emit signalCurrDay(m_nDay);
 
+    // 白底
     setSelected(true);
 }
 
@@ -554,11 +596,12 @@ void DayLabel::mouseDoubleClickEvent(QMouseEvent* event)
     QString str = m_strListMemo;
     if (event->button() != Qt::LeftButton)
         return;
-    // signal to RightDownWidget
-    emit signalMemo(str);
-    emit signalCurrDate(currDate);
-    // the label
+    // 设置到右边编辑框
+    pre_setRightDownWidget();
+    // the label 白底
     setSelected(true);
+    // 左边红框
+    emit sig_setFixedCurrDay(currDate);
 }
 
 //DateWidget
@@ -720,9 +763,9 @@ void DateWidget::sltBack2todday()
 void DateWidget::sltDisplaymsg(const QString& msg)
 {
     labelMsg->setText(msg);
-    m_timer = new QTimer(this);
+    if (m_timer == nullptr)
+        m_timer = new QTimer(this);
     m_timer->start(2000);
-    m_timer->setSingleShot(true);
     connect(m_timer, &QTimer::timeout, this, &DateWidget::sltStopTimer);
 }
 
